@@ -34,7 +34,24 @@ def test_generated_css_contains_paired_theme_and_accessibility_rules():
 
 def test_design_system_candidate_is_not_used_for_white_button_text():
     assert contrast_ratio("#FFFFFF", "#0891B2") < 4.5
-    assert LIGHT_THEME.primary == "#0E7490"
+    assert LIGHT_THEME.primary == "#187C72"
+    assert contrast_ratio(
+        LIGHT_THEME.on_primary,
+        LIGHT_THEME.primary,
+    ) >= 4.5
+
+
+def test_calm_wellness_light_palette_is_used():
+    assert LIGHT_THEME.background == "#F7F8F4"
+    assert LIGHT_THEME.foreground == "#17324D"
+    assert LIGHT_THEME.primary == "#187C72"
+    assert LIGHT_THEME.surface == "#FFFFFF"
+    assert LIGHT_THEME.muted_surface == "#EAF3EE"
+    assert LIGHT_THEME.border == "#D8E2DC"
+    assert contrast_ratio(
+        LIGHT_THEME.foreground,
+        LIGHT_THEME.background,
+    ) >= 4.5
     assert contrast_ratio(
         LIGHT_THEME.on_primary,
         LIGHT_THEME.primary,

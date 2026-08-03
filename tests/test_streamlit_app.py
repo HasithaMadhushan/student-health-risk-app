@@ -68,11 +68,32 @@ def test_app_exposes_only_the_student_health_check_journey():
         )
         for item in collection
     )
-    assert "Student Health Risk Demonstrator" in visible
+    assert "Student Health Check" in visible
     assert "Step 1 of 4" in visible
     assert "Implementation guide" not in visible
     assert "Appearance" not in visible
     assert not app.segmented_control
+
+
+def test_app_uses_compact_student_facing_copy():
+    app = AppTest.from_file(str(APP)).run(timeout=30)
+    visible = " ".join(
+        item.value
+        for collection in (
+            app.title,
+            app.markdown,
+            app.caption,
+            app.info,
+            app.warning,
+        )
+        for item in collection
+    )
+    assert "Student Health Check" in visible
+    assert "A quick four-step check" in visible
+    assert "Important information" in visible
+    assert "Feature meanings, units and observed ranges" not in visible
+    assert "Kaggle competition task" not in visible
+    assert "EDUCATIONAL WELLNESS DEMONSTRATOR" not in visible
 
 
 def test_app_guides_user_through_four_stages_and_preserves_values():
@@ -130,6 +151,7 @@ def test_result_is_simple_first_and_confidence_details_are_available():
     )
     assert len(app.get("progress")) >= 4
     assert "not calibrated probabilities" in visible
+    assert len(app.warning) == 1
 
 
 def test_every_visible_input_step_offers_i_do_not_know():

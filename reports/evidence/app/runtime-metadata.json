@@ -15,6 +15,7 @@
       "Review and result"
     ],
     "audience": "Non-technical student users",
+    "visual_style": "Compact calm wellness interface with warm neutral, navy, teal and sage palette",
     "technical_guide_inside_application": false,
     "result_presentation": "Predicted category first; confidence scores in a collapsed details panel",
     "missing_input_label": "I don't know",
@@ -35,7 +36,7 @@
     ],
     "screenshots": ["guided-step-1.png", "guided-review.png", "guided-result.png"]
   },
-  "automated_test_count": 32,
+  "automated_test_count": 34,
   "python": "3.12.13",
   "catboost": "1.2.10",
   "pandas": "2.3.3",

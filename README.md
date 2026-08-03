@@ -10,8 +10,9 @@ CatBoost model trained for Kaggle competition `playground-series-s6e7`.
 
 ## User experience and privacy
 
-The application is intentionally simple for non-technical users. One health
-check has four guided stages:
+The application uses a compact, calm wellness presentation for non-technical
+users: warm neutral surfaces, high-contrast navy text, teal actions and one
+concise safety/privacy panel. One health check has four guided stages:
 
 1. **Sleep and body**
 2. **Activity and daily habits**
