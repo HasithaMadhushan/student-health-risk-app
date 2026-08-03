@@ -13,19 +13,29 @@ class ThemePalette:
     surface: str
     muted_surface: str
     border: str
+    secondary_text: str
+    input_border: str
+    alert_surface: str
+    alert_foreground: str
+    focus: str
     destructive: str
 
 
 LIGHT_THEME = ThemePalette(
-    primary="#187C72",
+    primary="#005EB8",
     on_primary="#FFFFFF",
-    accent="#4F8F79",
-    background="#F7F8F4",
-    foreground="#17324D",
+    accent="#007F3B",
+    background="#F0F4F5",
+    foreground="#212B32",
     surface="#FFFFFF",
-    muted_surface="#EAF3EE",
-    border="#D8E2DC",
-    destructive="#B42318",
+    muted_surface="#E8EDEE",
+    border="#D8DDE0",
+    secondary_text="#4C6272",
+    input_border="#4C6272",
+    alert_surface="#FFF9C4",
+    alert_foreground="#212B32",
+    focus="#FFEB3B",
+    destructive="#D5281B",
 )
 
 DARK_THEME = ThemePalette(
@@ -37,6 +47,11 @@ DARK_THEME = ThemePalette(
     surface="#102F3B",
     muted_surface="#163E4A",
     border="#155E75",
+    secondary_text="#D8E2E6",
+    input_border="#AEB7BD",
+    alert_surface="#4D3B00",
+    alert_foreground="#FFF9C4",
+    focus="#FFEB3B",
     destructive="#F87171",
 )
 
@@ -73,6 +88,11 @@ def _properties(palette: ThemePalette) -> str:
     --app-surface: {palette.surface};
     --app-muted-surface: {palette.muted_surface};
     --app-border: {palette.border};
+    --app-secondary-text: {palette.secondary_text};
+    --app-input-border: {palette.input_border};
+    --app-alert-surface: {palette.alert_surface};
+    --app-alert-foreground: {palette.alert_foreground};
+    --app-focus: {palette.focus};
     --app-destructive: {palette.destructive};
     """
 
@@ -89,18 +109,11 @@ def build_theme_css(theme_override: str | None = None) -> str:
 <style>
 :root {{
 {_properties(LIGHT_THEME)}
-    --app-alert-surface: #FFF7E8;
-    --app-alert-foreground: #62440E;
-    --app-muted-text: #5F6F7A;
-    --app-focus: #D97706;
 }}
 
 @media (prefers-color-scheme: dark) {{
     :root {{
 {_properties(DARK_THEME)}
-        --app-alert-surface: #0C4A6E;
-        --app-alert-foreground: #E0F2FE;
-        --app-focus: #FBBF24;
     }}
 }}
 
@@ -156,7 +169,7 @@ body,
 }}
 
 [data-testid="stCaptionContainer"] p {{
-    color: var(--app-muted-text) !important;
+    color: var(--app-secondary-text) !important;
     opacity: 1;
 }}
 
@@ -185,7 +198,7 @@ body,
 [data-testid="stExpander"] summary {{
     background: var(--app-surface) !important;
     color: var(--app-foreground) !important;
-    border-color: var(--app-border) !important;
+    border-color: var(--app-input-border) !important;
     border-radius: 0.75rem;
 }}
 
@@ -200,10 +213,22 @@ body,
     min-height: 46px;
 }}
 
+[data-testid="stSelectbox"] [role="group"] {{
+    background: var(--app-surface) !important;
+    border: 1px solid var(--app-input-border) !important;
+    color: var(--app-foreground) !important;
+}}
+
+[data-testid="stSelectbox"] input,
+[data-testid="stSelectbox"] svg {{
+    color: var(--app-foreground) !important;
+    fill: currentColor !important;
+}}
+
 [data-testid="stNumberInput"] button {{
     background: var(--app-muted-surface) !important;
     color: var(--app-foreground) !important;
-    border-color: var(--app-border) !important;
+    border-color: var(--app-input-border) !important;
 }}
 
 [data-testid="stCodeBlock"],
@@ -250,8 +275,8 @@ code {{
 }}
 
 .stButton > button[kind="primary"]:hover {{
-    background: #12685F !important;
-    border-color: #12685F !important;
+    background: #003D78 !important;
+    border-color: #003D78 !important;
 }}
 
 .stButton > button:not([kind="primary"]) {{

@@ -25,11 +25,12 @@ personal information.
 1. Show the title, permanent non-diagnostic disclaimer and privacy statement.
 2. Explain that the app requests only the 12 features required by the locked
    model and does not collect a name, student ID or contact details.
-3. Move through the three guided input stages. Use **I don't know** for one
-   field and use **Back** once to demonstrate temporary session-state handling.
-4. On **Review your answers**, show that all 12 features are visible before the
-   model is invoked.
-5. Select **Show my result**. Show the predicted category, then expand **Show
+3. On Step 1, show that numeric fields start blank, categorical fields prompt
+   for a choice, and the `+` and `-` controls use sensible increments.
+4. Continue to Step 2, use **Not sure** once, then use **Back** to demonstrate
+   temporary session-state handling. Return to Step 2 and open **Review all
+   answers** to show all 12 features before inference.
+5. Select **Get my result**. Show the predicted category, then expand **Show
    confidence details**. Explain that these are model confidence scores, not
    calibrated medical probabilities.
 6. Select **Start a new check** to demonstrate reset behaviour.
@@ -47,7 +48,7 @@ Open each file at the named function while explaining this sequence:
    calls CatBoost's `load_model()`.
 6. `app/presentation.py: GUIDED_STEPS` defines the friendly input grouping;
    `build_payload()` restores the locked training feature order.
-7. Pressing **Show my result** calls
+7. Pressing **Get my result** calls
    `src/inference.py: CatBoostPredictor.predict()`.
 8. `src/validation.py: prepare_record()` validates inputs, maps missing numeric
    values to `numpy.nan`, maps missing categories to `__MISSING__`, and creates

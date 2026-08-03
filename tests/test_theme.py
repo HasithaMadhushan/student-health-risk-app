@@ -30,24 +30,31 @@ def test_generated_css_contains_paired_theme_and_accessibility_rules():
     assert "min-height: 44px" in css
     assert "focus-visible" in css
     assert '[data-testid="stAlert"]' in css
+    assert '[data-testid="stSelectbox"] [role="group"]' in css
 
 
-def test_design_system_candidate_is_not_used_for_white_button_text():
-    assert contrast_ratio("#FFFFFF", "#0891B2") < 4.5
-    assert LIGHT_THEME.primary == "#187C72"
+def test_primary_button_text_meets_wcag_aa():
+    assert LIGHT_THEME.primary == "#005EB8"
     assert contrast_ratio(
         LIGHT_THEME.on_primary,
         LIGHT_THEME.primary,
     ) >= 4.5
 
 
-def test_calm_wellness_light_palette_is_used():
-    assert LIGHT_THEME.background == "#F7F8F4"
-    assert LIGHT_THEME.foreground == "#17324D"
-    assert LIGHT_THEME.primary == "#187C72"
+def test_public_service_health_palette_is_used():
+    assert LIGHT_THEME.background == "#F0F4F5"
+    assert LIGHT_THEME.foreground == "#212B32"
+    assert LIGHT_THEME.primary == "#005EB8"
+    assert LIGHT_THEME.accent == "#007F3B"
     assert LIGHT_THEME.surface == "#FFFFFF"
-    assert LIGHT_THEME.muted_surface == "#EAF3EE"
-    assert LIGHT_THEME.border == "#D8E2DC"
+    assert LIGHT_THEME.muted_surface == "#E8EDEE"
+    assert LIGHT_THEME.border == "#D8DDE0"
+    assert LIGHT_THEME.secondary_text == "#4C6272"
+    assert LIGHT_THEME.input_border == "#4C6272"
+    assert LIGHT_THEME.alert_surface == "#FFF9C4"
+    assert LIGHT_THEME.alert_foreground == "#212B32"
+    assert LIGHT_THEME.focus == "#FFEB3B"
+    assert LIGHT_THEME.destructive == "#D5281B"
     assert contrast_ratio(
         LIGHT_THEME.foreground,
         LIGHT_THEME.background,
@@ -63,5 +70,9 @@ def test_streamlit_selected_theme_is_not_overridden_by_system_palette():
     assert "color-scheme: light" not in css
     dark_css = build_theme_css("dark")
     assert dark_css.rfind(DARK_THEME.background) > dark_css.find(
+        "@media (prefers-color-scheme: dark)"
+    )
+    light_css = build_theme_css("light")
+    assert light_css.rfind(LIGHT_THEME.alert_surface) > light_css.find(
         "@media (prefers-color-scheme: dark)"
     )

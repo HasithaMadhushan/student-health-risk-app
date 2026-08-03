@@ -15,34 +15,35 @@ class StepDefinition:
 
 GUIDED_STEPS = (
     StepDefinition(
-        title="Sleep and body",
-        description=(
-            "Start with information about sleep and general body measurements."
+        title="Your health basics",
+        description="Add what you know. You can leave any number blank.",
+        features=(
+            "sleep_duration",
+            "heart_rate",
+            "bmi",
+            "sleep_quality",
+            "stress_level",
         ),
-        features=("sleep_duration", "heart_rate", "bmi", "sleep_quality"),
     ),
     StepDefinition(
-        title="Activity and daily habits",
-        description="Next, add activity and hydration information.",
+        title="Your daily routine",
+        description="One final group, then review your answers and get a result.",
         features=(
             "calorie_expenditure",
             "step_count",
             "exercise_duration",
             "water_intake",
             "physical_activity_level",
+            "diet_type",
+            "smoking_alcohol",
         ),
-    ),
-    StepDefinition(
-        title="Lifestyle and wellbeing",
-        description=(
-            "Finally, add the remaining lifestyle and wellbeing information."
-        ),
-        features=("diet_type", "stress_level", "smoking_alcohol"),
     ),
 )
 
 FRIENDLY_LABELS = {
     "bmi": "BMI",
+    "calorie_expenditure": "Daily energy use",
+    "step_count": "Daily step count",
     "smoking_alcohol": "Smoking and alcohol",
 }
 
@@ -57,7 +58,7 @@ def format_category(value: str) -> str:
 
 def format_review_value(value: object) -> str:
     if value is None:
-        return "I don't know"
+        return "Not provided"
     if isinstance(value, str):
         return format_category(value)
     if isinstance(value, float):

@@ -10,17 +10,17 @@ CatBoost model trained for Kaggle competition `playground-series-s6e7`.
 
 ## User experience and privacy
 
-The application uses a compact, calm wellness presentation for non-technical
-users: warm neutral surfaces, high-contrast navy text, teal actions and one
-concise safety/privacy panel. One health check has four guided stages:
+The application uses an accessible public-service health presentation for
+non-technical users: reduced-glare grey, dark text, blue actions, green
+progress and one concise safety/privacy panel. One health check has two steps:
 
-1. **Sleep and body**
-2. **Activity and daily habits**
-3. **Lifestyle and wellbeing**
-4. **Review and result**
+1. **Your health basics**
+2. **Your daily routine**, followed by a compact review and result action
 
-Every field supports **I don't know**. Back and Continue preserve temporary
-answers, and the review stage shows all 12 model inputs before prediction. The
+Numeric fields start blank and categorical fields prompt for an answer or
+**Not sure**. Practical increments make the `+` and `-` controls useful for
+each feature. Back and Continue preserve temporary answers, and the Step 2
+review shows all 12 model inputs before prediction. The
 result displays the predicted competition category first; the three model
 confidence scores are available in a collapsed panel. They are not described
 as calibrated probabilities.
@@ -85,9 +85,9 @@ active Google Colab session.
 2. `AppPaths.from_environment()` resolves the model/schema locations.
 3. `load_schema()` checks schema version, feature order and class order.
 4. `CatBoostPredictor.load()` verifies the model SHA-256 before loading it.
-5. `GUIDED_STEPS` groups the 12 locked features across three input stages.
+5. `GUIDED_STEPS` groups the 12 locked features across two input steps.
 6. `build_payload()` restores exact training feature order.
-7. **Show my result** invokes `CatBoostPredictor.predict()`.
+7. **Get my result** invokes `CatBoostPredictor.predict()`.
 8. `prepare_record()` validates values and creates a one-row pandas DataFrame.
 9. CatBoost `predict_proba()` and `predict()` create scores and a class.
 10. `render_result()` displays the category and optional confidence details.

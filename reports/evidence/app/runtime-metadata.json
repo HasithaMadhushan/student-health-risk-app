@@ -9,16 +9,15 @@
   "persist_prediction_inputs": false,
   "guided_ui": {
     "stages": [
-      "Sleep and body",
-      "Activity and daily habits",
-      "Lifestyle and wellbeing",
-      "Review and result"
+      "Your health basics",
+      "Your daily routine with compact review and result"
     ],
     "audience": "Non-technical student users",
-    "visual_style": "Compact calm wellness interface with warm neutral, navy, teal and sage palette",
+    "visual_style": "Accessible public-service health interface with reduced-glare grey, dark text, blue actions and green progress",
     "technical_guide_inside_application": false,
     "result_presentation": "Predicted category first; confidence scores in a collapsed details panel",
-    "missing_input_label": "I don't know",
+    "numeric_missing_input": "Blank input",
+    "categorical_missing_input": "Not sure",
     "browser_verified": true,
     "desktop_viewport": "1280x720",
     "narrow_viewport": "375x812",
@@ -26,7 +25,8 @@
     "verified_behaviours": [
       "Back and Continue navigation",
       "input persistence between stages",
-      "all 12 locked features on the review stage",
+      "all 12 locked features in the Step 2 review",
+      "field-specific numeric increments",
       "missing numeric and categorical input accepted",
       "production CatBoost prediction",
       "three ordered model confidence scores",
@@ -36,7 +36,7 @@
     ],
     "screenshots": ["guided-step-1.png", "guided-review.png", "guided-result.png"]
   },
-  "automated_test_count": 34,
+  "automated_test_count": 35,
   "python": "3.12.13",
   "catboost": "1.2.10",
   "pandas": "2.3.3",
