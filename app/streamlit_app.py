@@ -55,19 +55,13 @@ def initialise_state(schema: InferenceSchema) -> None:
 
 
 def render_header() -> None:
-    st.title("Student Health Risk Demonstrator")
-    st.write(
-        "Follow four short stages to receive a model-generated category "
-        "for the Kaggle competition task."
-    )
-    st.warning(DISCLAIMER)
-    st.info(
-        "Privacy: this application does not ask for your name, contact "
-        "details or student ID, and it does not store your responses."
-    )
-    st.caption(
-        "Feature meanings, units and observed ranges have not been "
-        "independently established as clinical standards."
+    st.title("Student Health Check")
+    st.write("A quick four-step check using a trained prediction model.")
+    st.warning(
+        "**Important information**  \n"
+        f"{DISCLAIMER}  \n"
+        "Your answers stay in this session and no identifying details are "
+        "requested."
     )
 
 
@@ -209,7 +203,7 @@ def render_data_entry_step(
     schema: InferenceSchema,
 ) -> None:
     step = GUIDED_STEPS[step_index]
-    st.write(step.description)
+    st.caption(step.description)
     with st.container(border=True):
         for name in step.features:
             render_feature(name, schema)
@@ -268,11 +262,8 @@ def render_result(result: PredictionResult) -> None:
         st.caption("Predicted category")
         st.markdown(f"## {format_category(result.label)}")
         st.write(
-            "This category is a statistical output produced for the Kaggle "
-            "competition task. It does not provide a medical interpretation "
-            "or personal health advice."
+            "A model-generated category for this educational check."
         )
-        st.warning(DISCLAIMER)
         render_confidence_details(result)
         st.button(
             "Start a new check",
@@ -295,10 +286,7 @@ def render_review(
                 render_review_group(step.title, step.features, st.session_state[VALUES_KEY])
         return
 
-    st.write(
-        "Check your responses before asking the verified model to create "
-        "a competition category."
-    )
+    st.caption("Check your answers, then ask the model for a result.")
     values = st.session_state[VALUES_KEY]
     for step in GUIDED_STEPS:
         render_review_group(step.title, step.features, values)
@@ -336,7 +324,7 @@ def render_review(
 
 def render_app() -> None:
     st.set_page_config(
-        page_title="Student Health Risk Demonstrator",
+        page_title="Student Health Check",
         layout="centered",
     )
     inject_styles()

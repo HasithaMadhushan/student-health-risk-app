@@ -17,15 +17,15 @@ class ThemePalette:
 
 
 LIGHT_THEME = ThemePalette(
-    primary="#0E7490",
+    primary="#187C72",
     on_primary="#FFFFFF",
-    accent="#059669",
-    background="#ECFEFF",
-    foreground="#164E63",
+    accent="#4F8F79",
+    background="#F7F8F4",
+    foreground="#17324D",
     surface="#FFFFFF",
-    muted_surface="#E8F1F6",
-    border="#A5F3FC",
-    destructive="#DC2626",
+    muted_surface="#EAF3EE",
+    border="#D8E2DC",
+    destructive="#B42318",
 )
 
 DARK_THEME = ThemePalette(
@@ -89,9 +89,10 @@ def build_theme_css(theme_override: str | None = None) -> str:
 <style>
 :root {{
 {_properties(LIGHT_THEME)}
-    --app-alert-surface: #F0F9FF;
-    --app-alert-foreground: #0C4A6E;
-    --app-focus: #F59E0B;
+    --app-alert-surface: #FFF7E8;
+    --app-alert-foreground: #62440E;
+    --app-muted-text: #5F6F7A;
+    --app-focus: #D97706;
 }}
 
 @media (prefers-color-scheme: dark) {{
@@ -115,13 +116,25 @@ body,
 
 [data-testid="stAppViewContainer"] {{
     background-image:
-        radial-gradient(circle at top right, color-mix(in srgb, var(--app-primary) 12%, transparent), transparent 26rem);
+        radial-gradient(circle at top right, color-mix(in srgb, var(--app-primary) 7%, transparent), transparent 28rem);
 }}
 
 [data-testid="stMainBlockContainer"] {{
-    max-width: 58rem;
-    padding-top: 2.5rem;
-    padding-bottom: 4rem;
+    max-width: 52rem;
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+}}
+
+[data-testid="stMainBlockContainer"] h1 {{
+    font-size: clamp(2.25rem, 6vw, 3.4rem);
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+    margin-bottom: 0.55rem;
+}}
+
+[data-testid="stMainBlockContainer"] h2,
+[data-testid="stMainBlockContainer"] h3 {{
+    letter-spacing: -0.018em;
 }}
 
 [data-testid="stMainBlockContainer"] h1,
@@ -143,13 +156,15 @@ body,
 }}
 
 [data-testid="stCaptionContainer"] p {{
-    opacity: 0.82;
+    color: var(--app-muted-text) !important;
+    opacity: 1;
 }}
 
 [data-testid="stAlert"] {{
     background: var(--app-alert-surface) !important;
     border: 1px solid var(--app-border) !important;
-    border-radius: 0.75rem;
+    border-radius: 1rem;
+    padding: 0.15rem 0.25rem;
 }}
 
 [data-testid="stAlert"] p,
@@ -163,6 +178,7 @@ body,
     background: var(--app-surface) !important;
     border: 1px solid var(--app-border) !important;
     border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(23, 50, 77, 0.06);
 }}
 
 [data-testid="stExpander"] details,
@@ -181,6 +197,7 @@ body,
     background: var(--app-surface) !important;
     color: var(--app-foreground) !important;
     border-color: var(--app-border) !important;
+    min-height: 46px;
 }}
 
 [data-testid="stNumberInput"] button {{
@@ -203,8 +220,8 @@ code {{
 [data-testid="stButtonGroup"] button,
 [data-testid="stSegmentedControl"] button {{
     min-height: 44px;
-    border-radius: 0.75rem;
-    font-weight: 700;
+    border-radius: 0.875rem;
+    font-weight: 650;
     background: var(--app-surface) !important;
     border-color: var(--app-border) !important;
     color: var(--app-foreground) !important;
@@ -229,6 +246,12 @@ code {{
     background: var(--app-primary) !important;
     border-color: var(--app-primary) !important;
     color: var(--app-on-primary) !important;
+    box-shadow: 0 8px 18px rgba(24, 124, 114, 0.18);
+}}
+
+.stButton > button[kind="primary"]:hover {{
+    background: #12685F !important;
+    border-color: #12685F !important;
 }}
 
 .stButton > button:not([kind="primary"]) {{
@@ -254,6 +277,10 @@ summary:focus-visible {{
 
 [data-testid="stProgressBarTrack"] > div {{
     background-color: var(--app-accent) !important;
+}}
+
+[data-testid="stProgressBarTrack"] {{
+    background-color: var(--app-muted-surface) !important;
 }}
 
 [data-testid="stDataFrame"] {{
