@@ -16,7 +16,6 @@ from app.presentation import (
     format_review_value,
     human_label,
 )
-from app.guide_ui import render_implementation_guide
 from app.theme import build_theme_css
 from src.config import AppPaths, DISCLAIMER
 from src.inference import ArtifactError, CatBoostPredictor, PredictionResult
@@ -26,10 +25,6 @@ from src.validation import InputValidationError
 STEP_KEY = "guided_step"
 VALUES_KEY = "guided_values"
 RESULT_KEY = "prediction_result"
-MODE_KEY = "application_mode"
-MODE_OPTIONS = ("Use the model", "Implementation guide")
-THEME_KEY = "appearance_theme"
-THEME_OPTIONS = ("Light", "Dark")
 MISSING_LABEL = "I don't know"
 TOTAL_STAGES = len(GUIDED_STEPS) + 1
 
@@ -76,9 +71,9 @@ def render_header() -> None:
     )
 
 
-def inject_styles(theme: str = "Light") -> None:
+def inject_styles() -> None:
     st.markdown(
-        build_theme_css(theme.casefold()),
+        build_theme_css("light"),
         unsafe_allow_html=True,
     )
 
@@ -344,8 +339,7 @@ def render_app() -> None:
         page_title="Student Health Risk Demonstrator",
         layout="centered",
     )
-    selected_theme = st.session_state.get(THEME_KEY, THEME_OPTIONS[0])
-    inject_styles(selected_theme)
+    inject_styles()
     render_header()
     try:
         schema, predictor = load_runtime()
@@ -357,29 +351,6 @@ def render_app() -> None:
         st.stop()
 
     initialise_state(schema)
-    st.segmented_control(
-        "Appearance",
-        THEME_OPTIONS,
-        default=THEME_OPTIONS[0],
-        key=THEME_KEY,
-    )
-    mode = st.segmented_control(
-        "Application mode",
-        MODE_OPTIONS,
-        default=MODE_OPTIONS[0],
-        key=MODE_KEY,
-        label_visibility="collapsed",
-    )
-    if mode == "Implementation guide":
-        render_implementation_guide(
-            schema=schema,
-            predictor=predictor,
-            values=st.session_state[VALUES_KEY],
-            result=st.session_state[RESULT_KEY],
-            paths=AppPaths.from_environment(),
-        )
-        return
-
     step_index = st.session_state[STEP_KEY]
     render_progress(step_index)
     if step_index < len(GUIDED_STEPS):
