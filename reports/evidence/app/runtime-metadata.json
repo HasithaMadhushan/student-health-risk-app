@@ -1,0 +1,85 @@
+{
+  "application_model": "catboost_balanced_no_gender_production_all_train_v1.cbm",
+  "application_experiment_id": "catboost_balanced_no_gender_production_all_train_v1",
+  "model_sha256": "ea5f6ea9b060720d063874f9ee6ab0aae7ed8367e94c1222ffe2608dbe990004",
+  "model_size_bytes": 815904,
+  "tree_count": 343,
+  "training_rows": 690088,
+  "class_order": [
+    "at-risk",
+    "fit",
+    "unhealthy"
+  ],
+  "persist_prediction_inputs": false,
+  "guided_ui": {
+    "verified_at": "2026-07-26T20:02:51+05:30",
+    "stages": [
+      "Sleep and body",
+      "Activity and daily habits",
+      "Lifestyle and wellbeing",
+      "Review and result"
+    ],
+    "result_presentation": "Predicted category first; confidence scores in a collapsed details panel",
+    "missing_input_label": "I don't know",
+    "browser_verified": true,
+    "desktop_viewport": "1280x720",
+    "narrow_viewport": "375x812",
+    "narrow_horizontal_overflow": false,
+    "verified_behaviours": [
+      "Back and Continue navigation",
+      "input persistence between stages",
+      "all 12 locked features on the review stage",
+      "missing numeric input accepted",
+      "production CatBoost prediction",
+      "three ordered model confidence scores",
+      "new-check reset",
+      "permanent disclaimer",
+      "no identifying fields"
+    ],
+    "screenshots": [
+      "guided-step-1.png",
+      "guided-review.png",
+      "guided-result.png"
+    ]
+  },
+  "assessor_guide": {
+    "modes": [
+      "Use the model",
+      "Implementation guide"
+    ],
+    "sections": [
+      "Setup and application host",
+      "Verified runtime",
+      "Function invocation flow",
+      "Live invocation trace",
+      "Library responsibilities"
+    ],
+    "trace_row_count": 12,
+    "trace_persisted": false,
+    "exact_source_extraction": true,
+    "paired_light_dark_themes": true,
+    "final_browser_verification_pending": false,
+    "verified_viewports": [
+      "375x812",
+      "812x375",
+      "768x1024",
+      "1024x768"
+    ],
+    "horizontal_overflow_detected": false,
+    "console_error_count": 0,
+    "keyboard_focus_visible": true,
+    "screenshots": [
+      "assessor-setup-runtime.png",
+      "assessor-function-flow.png",
+      "assessor-live-trace.png",
+      "assessor-dark-theme.png"
+    ]
+  },
+  "automated_test_count": 41,
+  "python": "3.12.13",
+  "catboost": "1.2.10",
+  "pandas": "2.3.3",
+  "numpy": "2.5.1",
+  "streamlit": "1.60.0",
+  "pytest": "8.4.2"
+}
