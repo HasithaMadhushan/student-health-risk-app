@@ -1,0 +1,49 @@
+{
+  "created_utc": "2026-07-25T13:17:17+00:00",
+  "production_experiment_id": "catboost_balanced_no_gender_production_all_train_v1",
+  "production_model_relative_path": "models/production/catboost_balanced_no_gender_production_all_train_v1.cbm",
+  "production_model_sha256": "ea5f6ea9b060720d063874f9ee6ab0aae7ed8367e94c1222ffe2608dbe990004",
+  "features_in_training_order": [
+    "sleep_duration",
+    "heart_rate",
+    "bmi",
+    "calorie_expenditure",
+    "step_count",
+    "exercise_duration",
+    "water_intake",
+    "diet_type",
+    "stress_level",
+    "sleep_quality",
+    "physical_activity_level",
+    "smoking_alcohol"
+  ],
+  "numeric_features": [
+    "sleep_duration",
+    "heart_rate",
+    "bmi",
+    "calorie_expenditure",
+    "step_count",
+    "exercise_duration",
+    "water_intake"
+  ],
+  "categorical_features": [
+    "diet_type",
+    "stress_level",
+    "sleep_quality",
+    "physical_activity_level",
+    "smoking_alcohol"
+  ],
+  "excluded_inputs": [
+    "id",
+    "gender"
+  ],
+  "categorical_missing_token": "__MISSING__",
+  "class_labels_in_model_code_order": [
+    "at-risk",
+    "fit",
+    "unhealthy"
+  ],
+  "output_interpretation": "Class labels are production predictions. Any displayed scores must be labelled model confidence scores unless separate calibration evidence is produced.",
+  "medical_disclaimer_required": "Educational and research risk-screening demonstrator only. This output is not a medical diagnosis and must not replace advice from a qualified healthcare professional.",
+  "persist_prediction_inputs": false
+}

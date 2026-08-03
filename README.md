@@ -73,7 +73,7 @@ tests/                     Automated contract, inference, privacy and UI tests
 reports/evidence/app/      Runtime metadata and generated test evidence
 ```
 
-Private files, excluded by `.gitignore`:
+Private deployment files included only in this private repository:
 
 ```text
 artifacts/private/models/catboost_balanced_no_gender_production_all_train_v1.cbm
@@ -81,6 +81,11 @@ artifacts/private/schema/production_inference_schema.json
 artifacts/private/schema/feature-schema.json
 artifacts/private/metadata/production_training_record.json
 ```
+
+Do not change this repository to public while these files are tracked. Raw
+Kaggle data and generated submission CSV files are not included. The default
+paths in `src/config.py` allow Streamlit Community Cloud to load these files
+without additional secrets or environment variables.
 
 ## Setup and operation
 
@@ -94,9 +99,8 @@ python -m venv .venv
 ```
 
 The application opens at `http://localhost:8501` and runs independently of
-Google Colab. The private model and schemas must be present before startup.
-They are intentionally excluded from this public repository because the
-competition artefacts must not be redistributed.
+Google Colab. This private deployment branch contains the locked model and
+schemas at the default paths expected by the application.
 
 ## Exact functional flow
 
