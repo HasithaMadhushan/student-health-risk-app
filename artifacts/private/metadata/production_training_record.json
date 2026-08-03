@@ -1,0 +1,65 @@
+{
+  "created_utc": "2026-07-25T13:21:16+00:00",
+  "production_experiment_id": "catboost_balanced_no_gender_production_all_train_v1",
+  "source_candidate_id": "catboost_balanced_no_gender_final_dev_v1",
+  "source_lock_sha256": "e8f2246ac1b88bc76d401003ed3a4365b240ada18df2d805ca82159c207aaf1f",
+  "production_training_config_sha256": "88ee4276fe1ff54247b7f7948106c3d3709411311dc5cbe1eb5b2062f605ced1",
+  "training_rows": 690088,
+  "features_in_order": [
+    "sleep_duration",
+    "heart_rate",
+    "bmi",
+    "calorie_expenditure",
+    "step_count",
+    "exercise_duration",
+    "water_intake",
+    "diet_type",
+    "stress_level",
+    "sleep_quality",
+    "physical_activity_level",
+    "smoking_alcohol"
+  ],
+  "class_labels_in_code_order": [
+    "at-risk",
+    "fit",
+    "unhealthy"
+  ],
+  "class_counts": {
+    "at-risk": 592561,
+    "fit": 39803,
+    "unhealthy": 57724
+  },
+  "class_weights": [
+    0.38819519565636845,
+    5.779195873007898,
+    3.9849860254544613
+  ],
+  "tree_count": 343,
+  "training_seconds": 171.837664184,
+  "model_size_bytes": 815904,
+  "model_sha256": "ea5f6ea9b060720d063874f9ee6ab0aae7ed8367e94c1222ffe2608dbe990004",
+  "warning_count": 4,
+  "warnings": [
+    {
+      "category": "DeprecationWarning",
+      "message": "datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC)."
+    },
+    {
+      "category": "DeprecationWarning",
+      "message": "datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC)."
+    },
+    {
+      "category": "DeprecationWarning",
+      "message": "datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC)."
+    },
+    {
+      "category": "DeprecationWarning",
+      "message": "datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC)."
+    }
+  ],
+  "test_csv_read_during_training": false,
+  "submission_created_during_training": false,
+  "kaggle_accessed": false,
+  "kaggle_upload_performed": false,
+  "kaggle_final_selection_made": false
+}
