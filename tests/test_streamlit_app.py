@@ -24,11 +24,6 @@ def reach_review(app):
     return app
 
 
-def switch_mode(app, value):
-    app.segmented_control(key="application_mode").set_value(value)
-    return app.run(timeout=30)
-
-
 def test_app_script_can_resolve_project_modules():
     completed = subprocess.run(
         [sys.executable, str(APP)],
@@ -60,6 +55,26 @@ def test_app_renders_disclaimer_and_no_identifying_fields():
     )
 
 
+def test_app_exposes_only_the_student_health_check_journey():
+    app = AppTest.from_file(str(APP)).run(timeout=30)
+    visible = " ".join(
+        item.value
+        for collection in (
+            app.title,
+            app.markdown,
+            app.caption,
+            app.info,
+            app.warning,
+        )
+        for item in collection
+    )
+    assert "Student Health Risk Demonstrator" in visible
+    assert "Step 1 of 4" in visible
+    assert "Implementation guide" not in visible
+    assert "Appearance" not in visible
+    assert not app.segmented_control
+
+
 def test_app_guides_user_through_four_stages_and_preserves_values():
     app = AppTest.from_file(str(APP)).run(timeout=30)
     assert "Step 1 of 4" in stage_text(app)
@@ -73,47 +88,6 @@ def test_app_guides_user_through_four_stages_and_preserves_values():
     assert "Step 2 of 4" in stage_text(app)
     app.button(key="back_button").click().run(timeout=30)
     assert "Step 1 of 4" in stage_text(app)
-    sleep = next(
-        item
-        for item in app.number_input
-        if item.key == "value::sleep_duration"
-    )
-    assert sleep.value == 8.0
-
-
-def test_default_mode_and_implementation_guide_sections():
-    app = AppTest.from_file(str(APP)).run(timeout=30)
-    assert (
-        app.segmented_control(key="application_mode").value
-        == "Use the model"
-    )
-    assert "Step 1 of 4" in stage_text(app)
-
-    app = switch_mode(app, "Implementation guide")
-    visible = " ".join(item.value for item in app.markdown)
-    for heading in (
-        "1. Setup and application host",
-        "2. Verified runtime",
-        "3. Function invocation flow",
-        "4. Live invocation trace",
-        "5. Library responsibilities",
-    ):
-        assert heading in visible
-    assert "Run a prediction in Use the model" in visible
-
-
-def test_switching_modes_preserves_step_and_entered_value():
-    app = AppTest.from_file(str(APP)).run(timeout=30)
-    sleep = next(
-        item
-        for item in app.number_input
-        if item.key == "value::sleep_duration"
-    )
-    sleep.set_value(8.0)
-    app.button(key="continue_button").click().run(timeout=30)
-    app = switch_mode(app, "Implementation guide")
-    app = switch_mode(app, "Use the model")
-    app.button(key="back_button").click().run(timeout=30)
     sleep = next(
         item
         for item in app.number_input
@@ -156,27 +130,6 @@ def test_result_is_simple_first_and_confidence_details_are_available():
     )
     assert len(app.get("progress")) >= 4
     assert "not calibrated probabilities" in visible
-
-
-def test_completed_prediction_populates_real_assessor_trace():
-    app = reach_review(AppTest.from_file(str(APP)).run(timeout=30))
-    app.button(key="predict_button").click().run(timeout=30)
-    predicted = next(
-        heading.value.removeprefix("## ")
-        for heading in app.markdown
-        if heading.value in {"## At-risk", "## Fit", "## Unhealthy"}
-    )
-    app = switch_mode(app, "Implementation guide")
-    visible = " ".join(
-        item.value
-        for collection in (app.markdown, app.caption)
-        for item in collection
-    )
-    assert "12 inputs received" in visible
-    assert "Prepared record: 1 × 12" in visible
-    assert predicted in visible
-    assert len(app.table) == 1
-    assert len(app.table[0].value) == 12
 
 
 def test_every_visible_input_step_offers_i_do_not_know():
