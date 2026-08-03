@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 
 import streamlit as st
@@ -25,8 +26,74 @@ from src.validation import InputValidationError
 STEP_KEY = "guided_step"
 VALUES_KEY = "guided_values"
 RESULT_KEY = "prediction_result"
-MISSING_LABEL = "I don't know"
-TOTAL_STAGES = len(GUIDED_STEPS) + 1
+MISSING_LABEL = "Not sure"
+TOTAL_STAGES = len(GUIDED_STEPS)
+
+
+@dataclass(frozen=True)
+class NumericInputDisplay:
+    label: str
+    placeholder: str
+    step: float
+    number_format: str
+    help_text: str
+    display_minimum: float | None = None
+    display_maximum: float | None = None
+
+
+NUMERIC_INPUTS = {
+    "sleep_duration": NumericInputDisplay(
+        "Sleep duration",
+        "Hours per night",
+        0.25,
+        "%.2f",
+        "Display guidance based on the feature name; not a clinical standard.",
+    ),
+    "heart_rate": NumericInputDisplay(
+        "Heart rate",
+        "Beats per minute",
+        1.0,
+        "%.1f",
+        "Display guidance based on the feature name; not a clinical standard.",
+    ),
+    "bmi": NumericInputDisplay(
+        "BMI",
+        "Body mass index",
+        0.1,
+        "%.1f",
+        "Enter the value if known; this is not a clinical assessment.",
+    ),
+    "calorie_expenditure": NumericInputDisplay(
+        "Daily energy use",
+        "Enter the competition value",
+        50.0,
+        "%.0f",
+        "The competition has not independently confirmed this feature's units.",
+    ),
+    "step_count": NumericInputDisplay(
+        "Daily step count",
+        "Steps per day",
+        500.0,
+        "%.0f",
+        "Enter an approximate daily count if known.",
+        1500.0,
+        14500.0,
+    ),
+    "exercise_duration": NumericInputDisplay(
+        "Exercise duration",
+        "Minutes per day",
+        5.0,
+        "%.1f",
+        "Display guidance based on the feature name; not a clinical standard.",
+    ),
+    "water_intake": NumericInputDisplay(
+        "Water intake",
+        "Enter the competition value",
+        0.25,
+        "%.2f",
+        "The competition has not independently confirmed this feature's units.",
+    ),
+}
 
 
 @st.cache_resource
@@ -38,14 +105,7 @@ def load_runtime() -> tuple[InferenceSchema, CatBoostPredictor]:
 
 
 def default_values(schema: InferenceSchema) -> dict[str, object]:
-    values: dict[str, object] = {}
-    for name in schema.feature_order:
-        spec = schema.features[name]
-        if spec.kind == "numeric":
-            values[name] = float((spec.minimum + spec.maximum) / 2)
-        else:
-            values[name] = spec.categories[0]
-    return values
+    return {name: None for name in schema.feature_order}
 
 
 def initialise_state(schema: InferenceSchema) -> None:
@@ -56,7 +116,7 @@ def initialise_state(schema: InferenceSchema) -> None:
 
 def render_header() -> None:
     st.title("Student Health Check")
-    st.write("A quick four-step check using a trained prediction model.")
+    st.write("A quick two-step check using a trained prediction model.")
     st.warning(
         "**Important information**  \n"
         f"{DISCLAIMER}  \n"
@@ -73,59 +133,52 @@ def inject_styles() -> None:
 
 
 def render_progress(step_index: int) -> None:
-    title = (
-        GUIDED_STEPS[step_index].title
-        if step_index < len(GUIDED_STEPS)
-        else "Review and result"
-    )
+    title = GUIDED_STEPS[step_index].title
     st.caption(f"Step {step_index + 1} of {TOTAL_STAGES}")
     st.progress((step_index + 1) / TOTAL_STAGES, text=title)
     st.subheader(title)
 
 
 def render_numeric_input(name: str, spec: FeatureSpec) -> None:
-    missing_key = f"missing::{name}"
     value_key = f"value::{name}"
     values = st.session_state[VALUES_KEY]
-    current = values[name]
-    if value_key not in st.session_state:
-        st.session_state[value_key] = float(
-            current
-            if current is not None
-            else (spec.minimum + spec.maximum) / 2
-        )
-    missing = st.checkbox(
-        "I don't know",
-        key=missing_key,
-        help=f"Select this if {human_label(name).lower()} is not available.",
-    )
+    display = NUMERIC_INPUTS[name]
     entered = st.number_input(
-        human_label(name),
-        min_value=float(spec.minimum),
-        max_value=float(spec.maximum),
-        key=value_key,
-        disabled=missing,
-        help=(
-            "Allowed limits are the observed competition-data range, "
-            "not a clinical reference range."
+        display.label,
+        min_value=(
+            display.display_minimum
+            if display.display_minimum is not None
+            else float(spec.minimum)
         ),
+        max_value=(
+            display.display_maximum
+            if display.display_maximum is not None
+            else float(spec.maximum)
+        ),
+        value=values[name],
+        step=display.step,
+        format=display.number_format,
+        key=value_key,
+        placeholder=display.placeholder,
+        help=display.help_text,
     )
-    values[name] = None if missing else entered
+    values[name] = entered
 
 
 def render_categorical_input(name: str, spec: FeatureSpec) -> None:
     value_key = f"value::{name}"
     values = st.session_state[VALUES_KEY]
+    options = (*spec.categories, MISSING_LABEL)
     current = values[name]
-    options = (MISSING_LABEL, *spec.categories)
-    if value_key not in st.session_state:
-        st.session_state[value_key] = (
-            MISSING_LABEL if current is None else current
-        )
+    selected_index = (
+        options.index(current) if current in options else None
+    )
     selected = st.selectbox(
         human_label(name),
         options=options,
+        index=selected_index,
         key=value_key,
+        placeholder="Select an answer",
         format_func=(
             lambda value: (
                 MISSING_LABEL
@@ -134,7 +187,9 @@ def render_categorical_input(name: str, spec: FeatureSpec) -> None:
             )
         ),
     )
-    values[name] = None if selected == MISSING_LABEL else selected
+    values[name] = (
+        None if selected in (None, MISSING_LABEL) else selected
+    )
 
 
 def render_feature(name: str, schema: InferenceSchema) -> None:
@@ -154,11 +209,9 @@ def store_visible_values() -> None:
     values = st.session_state[VALUES_KEY]
     for name in GUIDED_STEPS[step_index].features:
         widget_value = st.session_state.get(f"value::{name}")
-        if st.session_state.get(f"missing::{name}", False):
+        if widget_value in (None, MISSING_LABEL):
             values[name] = None
-        elif widget_value == MISSING_LABEL:
-            values[name] = None
-        elif widget_value is not None:
+        else:
             values[name] = widget_value
 
 
@@ -177,25 +230,14 @@ def go_back() -> None:
     st.session_state[RESULT_KEY] = None
 
 
-def render_navigation(show_back: bool, show_continue: bool) -> None:
-    back_column, continue_column = st.columns(2)
-    with back_column:
-        if show_back:
-            st.button(
-                "Back",
-                key="back_button",
-                on_click=go_back,
-                use_container_width=True,
-            )
-    with continue_column:
-        if show_continue:
-            st.button(
-                "Continue",
-                key="continue_button",
-                type="primary",
-                on_click=go_forward,
-                use_container_width=True,
-            )
+def render_continue() -> None:
+    st.button(
+        "Continue to daily routine",
+        key="continue_button",
+        type="primary",
+        on_click=go_forward,
+        use_container_width=True,
+    )
 
 
 def render_data_entry_step(
@@ -205,9 +247,10 @@ def render_data_entry_step(
     step = GUIDED_STEPS[step_index]
     st.caption(step.description)
     with st.container(border=True):
-        for name in step.features:
-            render_feature(name, schema)
-    render_navigation(show_back=step_index > 0, show_continue=True)
+        columns = st.columns(2, gap="large")
+        for index, name in enumerate(step.features):
+            with columns[index % 2]:
+                render_feature(name, schema)
 
 
 def render_review_group(
@@ -222,6 +265,12 @@ def render_review_group(
                 f"**{human_label(name)}**  \n"
                 f"{format_review_value(values[name])}"
             )
+
+
+def render_review_summary(values: dict[str, object]) -> None:
+    with st.expander("Review all answers", expanded=False):
+        for step in GUIDED_STEPS:
+            render_review_group(step.title, step.features, values)
 
 
 def reset_check() -> None:
@@ -274,28 +323,18 @@ def render_result(result: PredictionResult) -> None:
         )
 
 
-def render_review(
+def render_step_two_actions(
     schema: InferenceSchema,
     predictor: CatBoostPredictor,
 ) -> None:
-    result = st.session_state[RESULT_KEY]
-    if result is not None:
-        render_result(result)
-        with st.expander("Review your responses", expanded=False):
-            for step in GUIDED_STEPS:
-                render_review_group(step.title, step.features, st.session_state[VALUES_KEY])
-        return
-
-    st.caption("Check your answers, then ask the model for a result.")
     values = st.session_state[VALUES_KEY]
-    for step in GUIDED_STEPS:
-        render_review_group(step.title, step.features, values)
+    render_review_summary(values)
 
     back_column, predict_column = st.columns(2)
     with back_column:
         back_requested = st.button(
             "Back",
-            key="review_back_button",
+            key="back_button",
             use_container_width=True,
         )
         if back_requested:
@@ -303,12 +342,13 @@ def render_review(
             st.rerun()
     with predict_column:
         submitted = st.button(
-            "Show my result",
+            "Get my result",
             key="predict_button",
             type="primary",
             use_container_width=True,
         )
     if submitted:
+        store_visible_values()
         payload = build_payload(values, schema)
         try:
             with st.spinner("Creating your model result..."):
@@ -341,10 +381,17 @@ def render_app() -> None:
     initialise_state(schema)
     step_index = st.session_state[STEP_KEY]
     render_progress(step_index)
-    if step_index < len(GUIDED_STEPS):
-        render_data_entry_step(step_index, schema)
+    result = st.session_state[RESULT_KEY]
+    if result is not None:
+        render_result(result)
+        render_review_summary(st.session_state[VALUES_KEY])
+        return
+
+    render_data_entry_step(step_index, schema)
+    if step_index == 0:
+        render_continue()
     else:
-        render_review(schema, predictor)
+        render_step_two_actions(schema, predictor)
 
 
 if __name__ == "__main__":

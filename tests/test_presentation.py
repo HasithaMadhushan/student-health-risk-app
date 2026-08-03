@@ -19,9 +19,26 @@ def test_guided_steps_cover_each_locked_feature_once():
     assert len(grouped) == len(set(grouped)) == 12
     assert set(grouped) == set(schema.feature_order)
     assert tuple(step.title for step in GUIDED_STEPS) == (
-        "Sleep and body",
-        "Activity and daily habits",
-        "Lifestyle and wellbeing",
+        "Your health basics",
+        "Your daily routine",
+    )
+    assert tuple(step.features for step in GUIDED_STEPS) == (
+        (
+            "sleep_duration",
+            "heart_rate",
+            "bmi",
+            "sleep_quality",
+            "stress_level",
+        ),
+        (
+            "calorie_expenditure",
+            "step_count",
+            "exercise_duration",
+            "water_intake",
+            "physical_activity_level",
+            "diet_type",
+            "smoking_alcohol",
+        ),
     )
 
 
@@ -38,7 +55,7 @@ def test_build_payload_restores_locked_order_and_preserves_missing_values():
 
 
 def test_review_formatting_is_friendly_without_changing_model_values():
-    assert format_review_value(None) == "I don't know"
+    assert format_review_value(None) == "Not provided"
     assert format_category("non-veg") == "Non-veg"
     assert format_category("very_high") == "Very high"
     assert human_label("bmi") == "BMI"

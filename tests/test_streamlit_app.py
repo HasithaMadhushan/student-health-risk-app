@@ -18,10 +18,19 @@ def stage_text(app):
     )
 
 
-def reach_review(app):
-    for _ in range(3):
-        app.button(key="continue_button").click().run(timeout=30)
+def reach_step_two(app):
+    app.button(key="continue_button").click().run(timeout=30)
     return app
+
+
+def make_prediction(app):
+    app = reach_step_two(app)
+    app.button(key="predict_button").click().run(timeout=30)
+    return app
+
+
+def widget(app, collection, key):
+    return next(item for item in collection if item.key == key)
 
 
 def test_app_script_can_resolve_project_modules():
@@ -46,87 +55,78 @@ def test_app_renders_disclaimer_and_no_identifying_fields():
     )
     assert DISCLAIMER in visible
     labels = {
-        widget.label.casefold()
+        item.label.casefold()
         for collection in (app.number_input, app.selectbox, app.checkbox)
-        for widget in collection
+        for item in collection
     }
     assert labels.isdisjoint(
         {"name", "student id", "email", "phone", "phone number"}
     )
 
 
-def test_app_exposes_only_the_student_health_check_journey():
+def test_app_uses_exactly_two_clear_steps():
     app = AppTest.from_file(str(APP)).run(timeout=30)
-    visible = " ".join(
-        item.value
-        for collection in (
-            app.title,
-            app.markdown,
-            app.caption,
-            app.info,
-            app.warning,
-        )
-        for item in collection
-    )
-    assert "Student Health Check" in visible
-    assert "Step 1 of 4" in visible
-    assert "Implementation guide" not in visible
-    assert "Appearance" not in visible
-    assert not app.segmented_control
+    assert "Step 1 of 2" in stage_text(app)
+    assert "Your health basics" in stage_text(app)
+    assert "A quick two-step check" in stage_text(app)
+    assert "Implementation guide" not in stage_text(app)
+
+    app = reach_step_two(app)
+    assert "Step 2 of 2" in stage_text(app)
+    assert "Your daily routine" in stage_text(app)
+    assert all(button.key != "continue_button" for button in app.button)
 
 
-def test_app_uses_compact_student_facing_copy():
+def test_numeric_inputs_start_blank_without_ambiguous_checkboxes():
     app = AppTest.from_file(str(APP)).run(timeout=30)
-    visible = " ".join(
-        item.value
-        for collection in (
-            app.title,
-            app.markdown,
-            app.caption,
-            app.info,
-            app.warning,
-        )
-        for item in collection
-    )
-    assert "Student Health Check" in visible
-    assert "A quick four-step check" in visible
-    assert "Important information" in visible
-    assert "Feature meanings, units and observed ranges" not in visible
-    assert "Kaggle competition task" not in visible
-    assert "EDUCATIONAL WELLNESS DEMONSTRATOR" not in visible
+    assert not app.checkbox
+    for name in ("sleep_duration", "heart_rate", "bmi"):
+        assert widget(app, app.number_input, f"value::{name}").value is None
 
 
-def test_app_guides_user_through_four_stages_and_preserves_values():
+def test_plus_and_minus_use_human_sized_increments():
     app = AppTest.from_file(str(APP)).run(timeout=30)
-    assert "Step 1 of 4" in stage_text(app)
-    sleep = next(
-        item
-        for item in app.number_input
-        if item.key == "value::sleep_duration"
-    )
-    sleep.set_value(8.0)
-    app.button(key="continue_button").click().run(timeout=30)
-    assert "Step 2 of 4" in stage_text(app)
+    sleep = widget(app, app.number_input, "value::sleep_duration")
+    sleep.set_value(6.5).increment()
+    assert sleep.value == 6.75
+    sleep.decrement()
+    assert sleep.value == 6.5
+
+    app = reach_step_two(app)
+    steps = widget(app, app.number_input, "value::step_count")
+    assert steps.min == 1500.0
+    assert steps.max == 14500.0
+    steps.set_value(8000.0).increment()
+    assert steps.value == 8500.0
+
+
+def test_categorical_inputs_prompt_for_a_choice_and_offer_not_sure():
+    app = AppTest.from_file(str(APP)).run(timeout=30)
+    for name in ("sleep_quality", "stress_level"):
+        field = widget(app, app.selectbox, f"value::{name}")
+        assert field.value is None
+        assert "Not sure" in field.options
+
+
+def test_navigation_preserves_entered_values():
+    app = AppTest.from_file(str(APP)).run(timeout=30)
+    widget(app, app.number_input, "value::sleep_duration").set_value(8.0)
+    app = reach_step_two(app)
     app.button(key="back_button").click().run(timeout=30)
-    assert "Step 1 of 4" in stage_text(app)
-    sleep = next(
-        item
-        for item in app.number_input
-        if item.key == "value::sleep_duration"
-    )
-    assert sleep.value == 8.0
+    assert "Step 1 of 2" in stage_text(app)
+    assert widget(app, app.number_input, "value::sleep_duration").value == 8.0
 
 
-def test_review_stage_contains_every_feature_and_no_result_before_submission():
-    app = reach_review(AppTest.from_file(str(APP)).run(timeout=30))
-    assert "Step 4 of 4" in stage_text(app)
+def test_step_two_contains_compact_review_of_all_features():
+    app = reach_step_two(AppTest.from_file(str(APP)).run(timeout=30))
+    assert any(item.label == "Review all answers" for item in app.expander)
     review = " ".join(item.value for item in app.markdown)
     for label in (
         "Sleep duration",
         "Heart rate",
         "BMI",
-        "Calorie expenditure",
-        "Step count",
+        "Daily energy use",
+        "Daily step count",
         "Exercise duration",
         "Water intake",
         "Diet type",
@@ -136,12 +136,11 @@ def test_review_stage_contains_every_feature_and_no_result_before_submission():
         "Smoking and alcohol",
     ):
         assert label in review
-    assert not app.success
+    assert "Not provided" in review
 
 
-def test_result_is_simple_first_and_confidence_details_are_available():
-    app = reach_review(AppTest.from_file(str(APP)).run(timeout=30))
-    app.button(key="predict_button").click().run(timeout=30)
+def test_result_is_simple_and_confidence_details_are_available():
+    app = make_prediction(AppTest.from_file(str(APP)).run(timeout=30))
     assert not app.exception
     visible = stage_text(app)
     assert "Your model result" in visible
@@ -149,48 +148,13 @@ def test_result_is_simple_first_and_confidence_details_are_available():
     assert any(
         item.label == "Show confidence details" for item in app.expander
     )
-    assert len(app.get("progress")) >= 4
     assert "not calibrated probabilities" in visible
     assert len(app.warning) == 1
 
 
-def test_every_visible_input_step_offers_i_do_not_know():
-    app = AppTest.from_file(str(APP)).run(timeout=30)
-    seen = set()
-    for step_index in range(3):
-        seen.update(
-            item.key.removeprefix("missing::")
-            for item in app.checkbox
-            if item.key and item.key.startswith("missing::")
-        )
-        seen.update(
-            item.key.removeprefix("value::")
-            for item in app.selectbox
-            if item.key
-            and item.key.startswith("value::")
-            and "I don't know" in item.options
-        )
-        if step_index < 2:
-            app.button(key="continue_button").click().run(timeout=30)
-    assert seen == {
-        "sleep_duration",
-        "heart_rate",
-        "bmi",
-        "sleep_quality",
-        "calorie_expenditure",
-        "step_count",
-        "exercise_duration",
-        "water_intake",
-        "physical_activity_level",
-        "diet_type",
-        "stress_level",
-        "smoking_alcohol",
-    }
-
-
-def test_start_new_check_returns_to_first_stage_without_a_result():
-    app = reach_review(AppTest.from_file(str(APP)).run(timeout=30))
-    app.button(key="predict_button").click().run(timeout=30)
+def test_start_new_check_returns_to_blank_first_step():
+    app = make_prediction(AppTest.from_file(str(APP)).run(timeout=30))
     app.button(key="reset_button").click().run(timeout=30)
-    assert "Step 1 of 4" in stage_text(app)
+    assert "Step 1 of 2" in stage_text(app)
     assert "Your model result" not in stage_text(app)
+    assert widget(app, app.number_input, "value::sleep_duration").value is None
