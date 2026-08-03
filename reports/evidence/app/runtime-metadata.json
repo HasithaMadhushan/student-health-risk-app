@@ -19,8 +19,8 @@
     "numeric_missing_input": "Blank input",
     "categorical_missing_input": "Not sure",
     "browser_verified": true,
-    "desktop_viewport": "1280x720",
-    "narrow_viewport": "375x812",
+    "desktop_viewport": "1440x1200",
+    "narrow_viewport": "390x844",
     "narrow_horizontal_overflow": false,
     "verified_behaviours": [
       "Back and Continue navigation",
