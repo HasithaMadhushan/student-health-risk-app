@@ -26,7 +26,7 @@
       "Back and Continue navigation",
       "input persistence between stages",
       "all 12 locked features in the Step 2 review",
-      "clean direct-entry numeric fields with readable examples",
+      "clean direct-entry numeric fields with familiar units and precision",
       "missing numeric and categorical input accepted",
       "production CatBoost prediction",
       "three ordered model confidence scores",
@@ -36,7 +36,7 @@
     ],
     "screenshots": ["guided-step-1.png", "guided-review.png", "guided-result.png"]
   },
-  "automated_test_count": 37,
+  "automated_test_count": 38,
   "python": "3.12.13",
   "catboost": "1.2.10",
   "pandas": "2.3.3",

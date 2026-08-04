@@ -42,16 +42,16 @@ class NumericInputDisplay:
 
 NUMERIC_INPUTS = {
     "sleep_duration": NumericInputDisplay(
-        "Sleep duration",
-        "e.g. 7.5 hours",
-        0.25,
-        "%.2f",
+        "Sleep duration (hours)",
+        "e.g. 8.5 hours",
+        0.5,
+        "%.1f",
     ),
     "heart_rate": NumericInputDisplay(
-        "Heart rate",
+        "Heart rate (bpm)",
         "e.g. 72 bpm",
         1.0,
-        "%.1f",
+        "%.0f",
     ),
     "bmi": NumericInputDisplay(
         "BMI",
@@ -61,7 +61,7 @@ NUMERIC_INPUTS = {
     ),
     "calorie_expenditure": NumericInputDisplay(
         "Daily energy use",
-        "Enter value",
+        "e.g. 2500",
         50.0,
         "%.0f",
     ),
@@ -74,16 +74,16 @@ NUMERIC_INPUTS = {
         14500.0,
     ),
     "exercise_duration": NumericInputDisplay(
-        "Exercise duration",
+        "Exercise duration (minutes)",
         "e.g. 30 minutes",
-        5.0,
-        "%.1f",
+        1.0,
+        "%.0f",
     ),
     "water_intake": NumericInputDisplay(
-        "Water intake",
-        "Enter value",
-        0.25,
-        "%.2f",
+        "Water intake (litres)",
+        "e.g. 2.5 litres",
+        0.1,
+        "%.1f",
     ),
 }
 
