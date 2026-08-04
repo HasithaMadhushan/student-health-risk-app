@@ -33,6 +33,19 @@ def test_generated_css_contains_paired_theme_and_accessibility_rules():
     assert '[data-testid="stSelectbox"] [role="group"]' in css
 
 
+def test_clean_numeric_input_css_contract():
+    css = build_theme_css("light")
+    assert '[data-testid="stNumberInput"] button' in css
+    assert "display: none !important" in css
+    assert '[data-testid="stNumberInput"] [role="group"]' in css
+    assert "min-height: 52px" in css
+    assert "border: 1.5px solid var(--app-input-border)" in css
+    assert "border-radius: 10px" in css
+    assert "font-variant-numeric: tabular-nums" in css
+    assert "::placeholder" in css
+    assert "color: var(--app-secondary-text) !important" in css
+
+
 def test_primary_button_text_meets_wcag_aa():
     assert LIGHT_THEME.primary == "#005EB8"
     assert contrast_ratio(
