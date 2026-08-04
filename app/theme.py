@@ -202,33 +202,56 @@ body,
     border-radius: 0.75rem;
 }}
 
-[data-testid="stNumberInput"] input,
-[data-baseweb="select"] > div,
-[data-baseweb="input"] > div,
 [role="listbox"],
 [role="option"] {{
     background: var(--app-surface) !important;
     color: var(--app-foreground) !important;
     border-color: var(--app-border) !important;
-    min-height: 46px;
+    min-height: 44px;
 }}
 
+[data-testid="stNumberInputContainer"],
 [data-testid="stSelectbox"] [role="group"] {{
     background: var(--app-surface) !important;
-    border: 1px solid var(--app-input-border) !important;
+    border: 1.5px solid var(--app-input-border) !important;
+    border-radius: 10px !important;
     color: var(--app-foreground) !important;
+    min-height: 52px;
+    overflow: hidden;
+    transition: border-color 180ms ease, box-shadow 180ms ease;
 }}
 
+[data-testid="stNumberInputContainer"]:focus-within,
+[data-testid="stSelectbox"] [role="group"]:focus-within {{
+    border-color: var(--app-primary) !important;
+    box-shadow: 0 0 0 3px var(--app-focus) !important;
+}}
+
+[data-testid="stNumberInput"] input,
 [data-testid="stSelectbox"] input,
 [data-testid="stSelectbox"] svg {{
     color: var(--app-foreground) !important;
     fill: currentColor !important;
 }}
 
+[data-testid="stNumberInput"] input,
+[data-testid="stSelectbox"] input {{
+    background: var(--app-surface) !important;
+    border: 0 !important;
+    font-size: 1rem !important;
+    font-variant-numeric: tabular-nums;
+    min-height: 49px;
+    padding-inline: 0.875rem !important;
+}}
+
+[data-testid="stNumberInput"] input::placeholder,
+[data-testid="stSelectbox"] input::placeholder {{
+    color: var(--app-secondary-text) !important;
+    opacity: 1 !important;
+}}
+
 [data-testid="stNumberInput"] button {{
-    background: var(--app-muted-surface) !important;
-    color: var(--app-foreground) !important;
-    border-color: var(--app-input-border) !important;
+    display: none !important;
 }}
 
 [data-testid="stCodeBlock"],

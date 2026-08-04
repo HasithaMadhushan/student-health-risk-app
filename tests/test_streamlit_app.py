@@ -84,20 +84,32 @@ def test_numeric_inputs_start_blank_without_ambiguous_checkboxes():
         assert widget(app, app.number_input, f"value::{name}").value is None
 
 
-def test_plus_and_minus_use_human_sized_increments():
+def test_numeric_inputs_use_clean_direct_entry():
     app = AppTest.from_file(str(APP)).run(timeout=30)
-    sleep = widget(app, app.number_input, "value::sleep_duration")
-    sleep.set_value(6.5).increment()
-    assert sleep.value == 6.75
-    sleep.decrement()
-    assert sleep.value == 6.5
+    expected = {
+        "sleep_duration": "e.g. 7.5 hours",
+        "heart_rate": "e.g. 72 bpm",
+        "bmi": "e.g. 24.5",
+    }
+    for name, placeholder in expected.items():
+        field = widget(app, app.number_input, f"value::{name}")
+        assert not field.help
+        assert field.proto.placeholder == placeholder
 
     app = reach_step_two(app)
-    steps = widget(app, app.number_input, "value::step_count")
-    assert steps.min == 1500.0
-    assert steps.max == 14500.0
-    steps.set_value(8000.0).increment()
-    assert steps.value == 8500.0
+    expected = {
+        "calorie_expenditure": "Enter value",
+        "step_count": "e.g. 8000",
+        "exercise_duration": "e.g. 30 minutes",
+        "water_intake": "Enter value",
+    }
+    for name, placeholder in expected.items():
+        field = widget(app, app.number_input, f"value::{name}")
+        assert not field.help
+        assert field.proto.placeholder == placeholder
+
+    widget(app, app.number_input, "value::step_count").set_value(8000.0)
+    assert widget(app, app.number_input, "value::step_count").value == 8000.0
 
 
 def test_categorical_inputs_prompt_for_a_choice_and_offer_not_sure():

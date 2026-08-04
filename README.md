@@ -18,9 +18,9 @@ progress and one concise safety/privacy panel. One health check has two steps:
 2. **Your daily routine**, followed by a compact review and result action
 
 Numeric fields start blank and categorical fields prompt for an answer or
-**Not sure**. Practical increments make the `+` and `-` controls useful for
-each feature. Back and Continue preserve temporary answers, and the Step 2
-review shows all 12 model inputs before prediction. The
+**Not sure**. Numeric values use clean direct-entry fields with readable
+examples and no small increment controls. Back and Continue preserve temporary
+answers, and the Step 2 review shows all 12 model inputs before prediction. The
 result displays the predicted competition category first; the three model
 confidence scores are available in a collapsed panel. They are not described
 as calibrated probabilities.
