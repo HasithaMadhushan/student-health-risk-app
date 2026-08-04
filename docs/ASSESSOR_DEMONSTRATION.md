@@ -26,7 +26,8 @@ personal information.
 2. Explain that the app requests only the 12 features required by the locked
    model and does not collect a name, student ID or contact details.
 3. On Step 1, show that numeric fields start blank, support direct entry with
-   readable examples, and categorical fields prompt for a choice.
+   readable examples, and use familiar precision and visible units such as
+   hours and bpm. Categorical fields prompt for a choice.
 4. Continue to Step 2, use **Not sure** once, then use **Back** to demonstrate
    temporary session-state handling. Return to Step 2 and open **Review all
    answers** to show all 12 features before inference.

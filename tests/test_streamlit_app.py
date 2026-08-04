@@ -87,7 +87,7 @@ def test_numeric_inputs_start_blank_without_ambiguous_checkboxes():
 def test_numeric_inputs_use_clean_direct_entry():
     app = AppTest.from_file(str(APP)).run(timeout=30)
     expected = {
-        "sleep_duration": "e.g. 7.5 hours",
+        "sleep_duration": "e.g. 8.5 hours",
         "heart_rate": "e.g. 72 bpm",
         "bmi": "e.g. 24.5",
     }
@@ -98,10 +98,10 @@ def test_numeric_inputs_use_clean_direct_entry():
 
     app = reach_step_two(app)
     expected = {
-        "calorie_expenditure": "Enter value",
+        "calorie_expenditure": "e.g. 2500",
         "step_count": "e.g. 8000",
         "exercise_duration": "e.g. 30 minutes",
-        "water_intake": "Enter value",
+        "water_intake": "e.g. 2.5 litres",
     }
     for name, placeholder in expected.items():
         field = widget(app, app.number_input, f"value::{name}")
@@ -110,6 +110,33 @@ def test_numeric_inputs_use_clean_direct_entry():
 
     widget(app, app.number_input, "value::step_count").set_value(8000.0)
     assert widget(app, app.number_input, "value::step_count").value == 8000.0
+
+
+def test_numeric_inputs_use_human_friendly_units_and_precision():
+    app = AppTest.from_file(str(APP)).run(timeout=30)
+    step_one = {
+        "sleep_duration": ("Sleep duration (hours)", 0.5, "%.1f"),
+        "heart_rate": ("Heart rate (bpm)", 1.0, "%.0f"),
+        "bmi": ("BMI", 0.1, "%.1f"),
+    }
+    for name, (label, step, number_format) in step_one.items():
+        field = widget(app, app.number_input, f"value::{name}")
+        assert field.label == label
+        assert field.step == step
+        assert field.format == number_format
+
+    app = reach_step_two(app)
+    step_two = {
+        "calorie_expenditure": ("Daily energy use", 50.0, "%.0f"),
+        "step_count": ("Daily step count", 500.0, "%.0f"),
+        "exercise_duration": ("Exercise duration (minutes)", 1.0, "%.0f"),
+        "water_intake": ("Water intake (litres)", 0.1, "%.1f"),
+    }
+    for name, (label, step, number_format) in step_two.items():
+        field = widget(app, app.number_input, f"value::{name}")
+        assert field.label == label
+        assert field.step == step
+        assert field.format == number_format
 
 
 def test_categorical_inputs_prompt_for_a_choice_and_offer_not_sure():
