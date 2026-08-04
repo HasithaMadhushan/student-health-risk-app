@@ -26,3 +26,11 @@ def test_locked_constants_match_production_contract():
     assert DISCLAIMER.startswith(
         "Educational and research risk-screening demonstrator only."
     )
+
+
+def test_streamlit_cloud_runtime_is_reproducibly_pinned():
+    requirements = (
+        Path(__file__).resolve().parents[1] / "requirements.txt"
+    ).read_text(encoding="utf-8").splitlines()
+
+    assert "streamlit==1.60.0" in requirements

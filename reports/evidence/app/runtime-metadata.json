@@ -36,7 +36,7 @@
     ],
     "screenshots": ["guided-step-1.png", "guided-review.png", "guided-result.png"]
   },
-  "automated_test_count": 36,
+  "automated_test_count": 37,
   "python": "3.12.13",
   "catboost": "1.2.10",
   "pandas": "2.3.3",
