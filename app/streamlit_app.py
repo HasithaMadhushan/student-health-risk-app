@@ -36,7 +36,6 @@ class NumericInputDisplay:
     placeholder: str
     step: float
     number_format: str
-    help_text: str
     display_minimum: float | None = None
     display_maximum: float | None = None
 
@@ -44,54 +43,47 @@ class NumericInputDisplay:
 NUMERIC_INPUTS = {
     "sleep_duration": NumericInputDisplay(
         "Sleep duration",
-        "Hours per night",
+        "e.g. 7.5 hours",
         0.25,
         "%.2f",
-        "Display guidance based on the feature name; not a clinical standard.",
     ),
     "heart_rate": NumericInputDisplay(
         "Heart rate",
-        "Beats per minute",
+        "e.g. 72 bpm",
         1.0,
         "%.1f",
-        "Display guidance based on the feature name; not a clinical standard.",
     ),
     "bmi": NumericInputDisplay(
         "BMI",
-        "Body mass index",
+        "e.g. 24.5",
         0.1,
         "%.1f",
-        "Enter the value if known; this is not a clinical assessment.",
     ),
     "calorie_expenditure": NumericInputDisplay(
         "Daily energy use",
-        "Enter the competition value",
+        "Enter value",
         50.0,
         "%.0f",
-        "The competition has not independently confirmed this feature's units.",
     ),
     "step_count": NumericInputDisplay(
         "Daily step count",
-        "Steps per day",
+        "e.g. 8000",
         500.0,
         "%.0f",
-        "Enter an approximate daily count if known.",
         1500.0,
         14500.0,
     ),
     "exercise_duration": NumericInputDisplay(
         "Exercise duration",
-        "Minutes per day",
+        "e.g. 30 minutes",
         5.0,
         "%.1f",
-        "Display guidance based on the feature name; not a clinical standard.",
     ),
     "water_intake": NumericInputDisplay(
         "Water intake",
-        "Enter the competition value",
+        "Enter value",
         0.25,
         "%.2f",
-        "The competition has not independently confirmed this feature's units.",
     ),
 }
 
@@ -160,7 +152,6 @@ def render_numeric_input(name: str, spec: FeatureSpec) -> None:
         format=display.number_format,
         key=value_key,
         placeholder=display.placeholder,
-        help=display.help_text,
     )
     values[name] = entered
 
