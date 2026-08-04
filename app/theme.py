@@ -210,7 +210,7 @@ body,
     min-height: 44px;
 }}
 
-[data-testid="stNumberInput"] [role="group"],
+[data-testid="stNumberInputContainer"],
 [data-testid="stSelectbox"] [role="group"] {{
     background: var(--app-surface) !important;
     border: 1.5px solid var(--app-input-border) !important;
@@ -221,7 +221,7 @@ body,
     transition: border-color 180ms ease, box-shadow 180ms ease;
 }}
 
-[data-testid="stNumberInput"] [role="group"]:focus-within,
+[data-testid="stNumberInputContainer"]:focus-within,
 [data-testid="stSelectbox"] [role="group"]:focus-within {{
     border-color: var(--app-primary) !important;
     box-shadow: 0 0 0 3px var(--app-focus) !important;
