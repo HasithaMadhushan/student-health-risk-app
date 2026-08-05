@@ -19,8 +19,12 @@ def test_guided_steps_cover_each_locked_feature_once():
     assert len(grouped) == len(set(grouped)) == 12
     assert set(grouped) == set(schema.feature_order)
     assert tuple(step.title for step in GUIDED_STEPS) == (
-        "Your health basics",
-        "Your daily routine",
+        "Health-related inputs",
+        "Daily routine inputs",
+    )
+    assert tuple(step.description for step in GUIDED_STEPS) == (
+        "Complete the available fields. Optional numeric values may be left blank.",
+        "Complete the remaining fields, review the record and generate a result.",
     )
     assert tuple(step.features for step in GUIDED_STEPS) == (
         (
