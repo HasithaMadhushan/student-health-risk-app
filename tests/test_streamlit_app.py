@@ -51,7 +51,7 @@ def test_app_script_can_resolve_project_modules():
     assert completed.returncode == 0, completed.stderr
 
 
-def test_app_uses_compact_disclaimer_and_has_no_identifying_fields():
+def test_app_has_no_disclaimer_or_identifying_fields():
     app = AppTest.from_file(str(APP)).run(timeout=30)
     assert not app.exception
     visible = " ".join(
@@ -60,11 +60,8 @@ def test_app_uses_compact_disclaimer_and_has_no_identifying_fields():
         for item in collection
     )
     assert "Important information" not in visible
-    disclaimer_items = [
-        item.value for item in app.markdown if DISCLAIMER in item.value
-    ]
-    assert len(disclaimer_items) == 1
-    assert 'class="medical-disclaimer"' in disclaimer_items[0]
+    assert DISCLAIMER not in visible
+    assert 'class="medical-disclaimer"' not in visible
     assert not app.warning
     assert "Your answers stay in this session" not in visible
     labels = {
@@ -77,18 +74,16 @@ def test_app_uses_compact_disclaimer_and_has_no_identifying_fields():
     )
 
 
-def test_compact_disclaimer_is_permanent_across_normal_app_states():
+def test_disclaimer_is_absent_across_normal_app_states():
     states = (
         AppTest.from_file(str(APP)).run(timeout=30),
         reach_step_two(AppTest.from_file(str(APP)).run(timeout=30)),
         make_prediction(AppTest.from_file(str(APP)).run(timeout=30)),
     )
     for current in states:
-        disclaimer_items = [
-            item.value for item in current.markdown if DISCLAIMER in item.value
-        ]
-        assert len(disclaimer_items) == 1
-        assert 'class="medical-disclaimer"' in disclaimer_items[0]
+        visible = " ".join(item.value for item in current.markdown)
+        assert DISCLAIMER not in visible
+        assert 'class="medical-disclaimer"' not in visible
         assert not current.warning
 
 
@@ -313,13 +308,12 @@ def test_one_prediction_click_invokes_predictor_once_across_result_rerender(
     monkeypatch.setattr(streamlit_app, "load_runtime", lambda: (schema, predictor))
     monkeypatch.setattr(streamlit_app, "render_progress", lambda step: None)
     monkeypatch.setattr(streamlit_app, "render_result", lambda value: None)
-    monkeypatch.setattr(streamlit_app, "render_footer", lambda: None)
     streamlit_app.render_app()
 
     assert predictor.predict.call_count == 1
 
 
-def test_startup_failure_hides_internal_exception_and_keeps_safe_footer(
+def test_startup_failure_hides_internal_exception_without_disclaimer(
     monkeypatch,
 ):
     sentinel = r"C:\artifacts\private\secret-model.cbm::internal_feature_key"
@@ -357,8 +351,8 @@ def test_startup_failure_hides_internal_exception_and_keeps_safe_footer(
     assert errors == [
         "The application is temporarily unavailable. Please try again later."
     ]
-    assert DISCLAIMER in visible
-    assert 'class="medical-disclaimer"' in visible
+    assert DISCLAIMER not in visible
+    assert 'class="medical-disclaimer"' not in visible
     assert "CIS6005 Computational Intelligence project" not in visible
     assert "Model family: CatBoost" not in visible
 

@@ -358,26 +358,6 @@ summary:focus-visible {{
     border-color: var(--app-border) !important;
 }}
 
-.app-footer {{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem 1.5rem;
-    margin-top: 2.5rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--app-border);
-    color: var(--app-secondary-text);
-    font-size: 0.8125rem;
-    line-height: 1.5;
-}}
-
-[data-testid="stMainBlockContainer"] .medical-disclaimer {{
-    margin: 0.75rem 0 0;
-    color: var(--app-secondary-text) !important;
-    font-size: 1rem;
-    line-height: 1.5;
-}}
-
 #MainMenu {{
     visibility: hidden;
 }}
@@ -404,10 +384,6 @@ summary:focus-visible {{
         width: 100%;
     }}
 
-    .app-footer {{
-        align-items: flex-start;
-        flex-direction: column;
-    }}
 }}
 
 @media (prefers-reduced-motion: reduce) {{
