@@ -18,7 +18,7 @@ from app.presentation import (
     human_label,
 )
 from app.theme import build_theme_css
-from src.config import DISCLAIMER, AppPaths
+from src.config import AppPaths
 from src.inference import ArtifactError, CatBoostPredictor, PredictionResult
 from src.schema import FeatureSpec, InferenceSchema, SchemaError, load_schema
 from src.validation import InputValidationError
@@ -124,13 +124,6 @@ def render_progress(step_index: int) -> None:
     st.progress((step_index + 1) / TOTAL_STAGES)
     st.subheader(step.title)
     st.caption(step.description)
-
-
-def render_footer() -> None:
-    st.markdown(
-        f'<p class="medical-disclaimer">{DISCLAIMER}</p>',
-        unsafe_allow_html=True,
-    )
 
 
 def render_numeric_input(name: str, spec: FeatureSpec) -> None:
@@ -367,7 +360,7 @@ def render_app() -> None:
         st.error(
             "The application is temporarily unavailable. Please try again later."
         )
-        render_footer()
+        st.empty()
         st.stop()
 
     initialise_state(schema)
@@ -377,7 +370,7 @@ def render_app() -> None:
     if result is not None:
         render_result(result)
         render_review_summary(st.session_state[VALUES_KEY])
-        render_footer()
+        st.empty()
         return
 
     render_data_entry_step(step_index, schema)
@@ -385,7 +378,7 @@ def render_app() -> None:
         render_continue()
     else:
         render_step_two_actions(schema, predictor)
-    render_footer()
+    st.empty()
 
 
 if __name__ == "__main__":

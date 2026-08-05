@@ -91,8 +91,8 @@ def test_professional_layout_is_centered_restrained_and_responsive():
     assert "linear-gradient" not in css
     assert "box-shadow: 0 6px 20px" in css
     assert "border-radius: 0.875rem" in css
-    assert ".app-footer" in css
-    assert ".medical-disclaimer" in css
+    assert ".app-footer" not in css
+    assert ".medical-disclaimer" not in css
     assert "@media (max-width: 640px)" in css
     assert "min-height: 48px" in css
     assert "prefers-reduced-motion" in css
@@ -102,15 +102,10 @@ def test_professional_layout_is_centered_restrained_and_responsive():
     ) >= 4.5
 
 
-def test_medical_disclaimer_overrides_main_content_paragraph_typography():
+def test_removed_footer_has_no_residual_component_styles():
     css = build_theme_css("light")
-    declarations = _css_declarations(
-        css,
-        '[data-testid="stMainBlockContainer"] .medical-disclaimer',
-    )
-    assert "color: var(--app-secondary-text) !important" in declarations
-    assert "font-size: 1rem" in declarations
-    assert "line-height: 1.5" in declarations
+    assert ".app-footer" not in css
+    assert ".medical-disclaimer" not in css
 
 
 def test_component_radii_distinguish_controls_from_card_surfaces():

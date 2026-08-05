@@ -27,7 +27,8 @@ Use a surgical Streamlit redesign built from the existing native Streamlit contr
 
 - Title: **Student Health Risk Prediction**
 - Subtitle: **Enter one record to generate a competition-model prediction.**
-- Remove the prominent yellow **Important information** panel and its old session/privacy sentence from every application state. Retain the exact mandatory medical disclaimer as compact, non-panel footer content in every normal and fail-closed state.
+- Remove the prominent yellow **Important information** panel and its old session/privacy sentence from every application state.
+- Project-owner override (5 August 2026): remove the former medical disclaimer and technical project/model footer metadata from every normal and fail-closed state.
 
 The header is followed by a compact step label and progress bar. The step heading and its supporting copy appear once beneath the progress indicator, avoiding duplicate step titles.
 
@@ -78,13 +79,7 @@ The **Review entered values** expander remains below the result card and uses on
 
 ### Footer
 
-Add a low-emphasis footer after the active view:
-
-- Exact permanent disclaimer: **Educational and research risk-screening demonstrator only. This output is not a medical diagnosis and must not replace advice from a qualified healthcare professional.**
-- **CIS6005 Computational Intelligence project**
-- **Model family: CatBoost**
-
-The disclaimer must use secondary text colour, compact spacing, and body text of at least 1rem. It must not reproduce the removed yellow panel or old technical copy.
+Do not render a footer, medical disclaimer, course/project label, or model-family label. This owner decision supersedes the earlier footer design while leaving model behaviour and privacy safeguards unchanged.
 
 ## Visual system
 

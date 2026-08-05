@@ -1,5 +1,7 @@
 # Professional Streamlit UI Implementation Plan
 
+> **Superseding owner decision (5 August 2026):** Remove the former medical disclaimer and all technical footer metadata from every application state. This decision replaces every disclaimer/footer-retention instruction and example later in this historical plan; inference, privacy, validation, and fail-closed behaviour remain unchanged.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Replace the prominent disclaimer-led interface with a polished, responsive two-step Streamlit experience while leaving the verified CatBoost inference contract unchanged.
@@ -17,7 +19,7 @@
 - Do not add external frontend frameworks or remove privacy/inference tests.
 - Keep the two-step five-feature/seven-feature schema mapping exactly unchanged.
 - Remove the full yellow **Important information** panel from every application state.
-- Permanently retain the exact mandatory medical disclaimer as compact, non-panel footer content in every normal and fail-closed state.
+- Do not render the former medical disclaimer or technical project/model footer metadata in any state.
 - Maintain accessible contrast, visible focus, 44 px minimum targets, reduced motion, and responsive desktop/tablet/mobile behaviour.
 
 ---
