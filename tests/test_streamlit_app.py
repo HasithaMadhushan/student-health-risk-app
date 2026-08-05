@@ -1,10 +1,16 @@
 from pathlib import Path
 import subprocess
 import sys
+from contextlib import nullcontext
+from unittest.mock import Mock
 
+import pytest
 from streamlit.testing.v1 import AppTest
 
-from src.config import DISCLAIMER
+import app.streamlit_app as streamlit_app
+from src.config import AppPaths, DISCLAIMER
+from src.inference import PredictionResult
+from src.schema import SchemaError, load_schema
 
 APP = Path(__file__).resolve().parents[1] / "app" / "streamlit_app.py"
 PROJECT_ROOT = APP.parents[1]
@@ -250,6 +256,104 @@ def test_result_rerun_keeps_one_reset_action_and_no_prediction_action():
     ]
     assert len(reset_actions) == 1
     assert all(button.key != "predict_button" for button in app.button)
+
+
+def test_one_prediction_click_invokes_predictor_once_across_result_rerender(
+    monkeypatch,
+):
+    paths = AppPaths.from_environment()
+    schema = load_schema(
+        paths.inference_schema_path,
+        paths.feature_schema_path,
+    )
+    result = PredictionResult(
+        label="at-risk",
+        confidence_scores={
+            "at-risk": 0.6,
+            "fit": 0.2,
+            "unhealthy": 0.2,
+        },
+        experiment_id="test-experiment",
+        model_sha256="test-hash",
+    )
+    predictor = Mock()
+    predictor.predict.return_value = result
+    state = {
+        streamlit_app.STEP_KEY: 1,
+        streamlit_app.VALUES_KEY: streamlit_app.default_values(schema),
+        streamlit_app.RESULT_KEY: None,
+    }
+    monkeypatch.setattr(streamlit_app.st, "session_state", state)
+    monkeypatch.setattr(streamlit_app, "render_review_summary", lambda values: None)
+    monkeypatch.setattr(
+        streamlit_app.st,
+        "columns",
+        lambda count: tuple(nullcontext() for _ in range(count)),
+    )
+    monkeypatch.setattr(
+        streamlit_app.st,
+        "button",
+        lambda label, key, **kwargs: key == "predict_button",
+    )
+    monkeypatch.setattr(streamlit_app.st, "spinner", lambda message: nullcontext())
+    monkeypatch.setattr(streamlit_app.st, "rerun", lambda: None)
+
+    streamlit_app.render_step_two_actions(schema, predictor)
+    assert predictor.predict.call_count == 1
+
+    monkeypatch.setattr(streamlit_app.st, "set_page_config", lambda **kwargs: None)
+    monkeypatch.setattr(streamlit_app, "inject_styles", lambda: None)
+    monkeypatch.setattr(streamlit_app, "render_header", lambda: None)
+    monkeypatch.setattr(streamlit_app, "load_runtime", lambda: (schema, predictor))
+    monkeypatch.setattr(streamlit_app, "render_progress", lambda step: None)
+    monkeypatch.setattr(streamlit_app, "render_result", lambda value: None)
+    monkeypatch.setattr(streamlit_app, "render_footer", lambda: None)
+    streamlit_app.render_app()
+
+    assert predictor.predict.call_count == 1
+
+
+def test_startup_failure_hides_internal_exception_and_keeps_safe_footer(
+    monkeypatch,
+):
+    sentinel = r"C:\artifacts\private\secret-model.cbm::internal_feature_key"
+    errors = []
+    rendered_markdown = []
+
+    def fail_runtime_load():
+        raise SchemaError(sentinel)
+
+    class StopRendering(RuntimeError):
+        pass
+
+    monkeypatch.setattr(streamlit_app.st, "set_page_config", lambda **kwargs: None)
+    monkeypatch.setattr(streamlit_app, "inject_styles", lambda: None)
+    monkeypatch.setattr(streamlit_app, "render_header", lambda: None)
+    monkeypatch.setattr(streamlit_app, "load_runtime", fail_runtime_load)
+    monkeypatch.setattr(streamlit_app.st, "error", errors.append)
+    monkeypatch.setattr(
+        streamlit_app.st,
+        "markdown",
+        lambda body, **kwargs: rendered_markdown.append(body),
+    )
+    monkeypatch.setattr(
+        streamlit_app.st,
+        "stop",
+        lambda: (_ for _ in ()).throw(StopRendering()),
+    )
+
+    with pytest.raises(StopRendering):
+        streamlit_app.render_app()
+
+    visible = " ".join((*errors, *rendered_markdown))
+    assert sentinel not in visible
+    assert "internal_feature_key" not in visible
+    assert errors == [
+        "The application is temporarily unavailable. Please try again later."
+    ]
+    assert DISCLAIMER in visible
+    assert 'class="medical-disclaimer"' in visible
+    assert "CIS6005 Computational Intelligence project" in visible
 
 
 def test_start_new_check_returns_to_blank_first_step():

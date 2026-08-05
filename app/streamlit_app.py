@@ -367,10 +367,9 @@ def render_app() -> None:
     render_header()
     try:
         schema, predictor = load_runtime()
-    except (SchemaError, ArtifactError) as exc:
+    except (SchemaError, ArtifactError):
         st.error(
-            "The application is temporarily unavailable because its "
-            f"verified model files could not be loaded: {exc}"
+            "The application is temporarily unavailable. Please try again later."
         )
         render_footer()
         st.stop()

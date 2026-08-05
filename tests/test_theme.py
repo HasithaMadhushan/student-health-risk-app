@@ -109,7 +109,7 @@ def test_medical_disclaimer_overrides_main_content_paragraph_typography():
         '[data-testid="stMainBlockContainer"] .medical-disclaimer',
     )
     assert "color: var(--app-secondary-text) !important" in declarations
-    assert "font-size: 0.8125rem" in declarations
+    assert "font-size: 1rem" in declarations
     assert "line-height: 1.5" in declarations
 
 
