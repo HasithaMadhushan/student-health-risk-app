@@ -92,6 +92,18 @@ def test_compact_disclaimer_is_permanent_across_normal_app_states():
         assert not current.warning
 
 
+def test_footer_omits_course_and_model_metadata():
+    states = (
+        AppTest.from_file(str(APP)).run(timeout=30),
+        reach_step_two(AppTest.from_file(str(APP)).run(timeout=30)),
+        make_prediction(AppTest.from_file(str(APP)).run(timeout=30)),
+    )
+    for current in states:
+        visible = " ".join(item.value for item in current.markdown)
+        assert "CIS6005 Computational Intelligence project" not in visible
+        assert "Model family: CatBoost" not in visible
+
+
 def test_app_uses_exactly_two_clear_steps():
     app = AppTest.from_file(str(APP)).run(timeout=30)
     assert app.title[0].value == "Student Health Risk Prediction"
@@ -239,12 +251,6 @@ def test_result_is_simple_and_confidence_details_are_available():
     assert score_labels[0].startswith("At-risk:")
     assert score_labels[1].startswith("Fit:")
     assert score_labels[2].startswith("Unhealthy:")
-    assert "CIS6005 Computational Intelligence project" in " ".join(
-        item.value for item in app.markdown
-    )
-    assert "Model family: CatBoost" in " ".join(
-        item.value for item in app.markdown
-    )
     assert not app.warning
 
 
@@ -353,7 +359,8 @@ def test_startup_failure_hides_internal_exception_and_keeps_safe_footer(
     ]
     assert DISCLAIMER in visible
     assert 'class="medical-disclaimer"' in visible
-    assert "CIS6005 Computational Intelligence project" in visible
+    assert "CIS6005 Computational Intelligence project" not in visible
+    assert "Model family: CatBoost" not in visible
 
 
 def test_start_new_check_returns_to_blank_first_step():

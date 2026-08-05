@@ -128,11 +128,7 @@ def render_progress(step_index: int) -> None:
 
 def render_footer() -> None:
     st.markdown(
-        f'<p class="medical-disclaimer">{DISCLAIMER}</p>'
-        '<footer class="app-footer">'
-        '<span>CIS6005 Computational Intelligence project</span>'
-        '<span>Model family: CatBoost</span>'
-        '</footer>',
+        f'<p class="medical-disclaimer">{DISCLAIMER}</p>',
         unsafe_allow_html=True,
     )
 
