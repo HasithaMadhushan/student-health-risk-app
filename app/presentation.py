@@ -15,8 +15,8 @@ class StepDefinition:
 
 GUIDED_STEPS = (
     StepDefinition(
-        title="Your health basics",
-        description="Add what you know. You can leave any number blank.",
+        title="Health-related inputs",
+        description="Complete the available fields. Optional numeric values may be left blank.",
         features=(
             "sleep_duration",
             "heart_rate",
@@ -26,8 +26,8 @@ GUIDED_STEPS = (
         ),
     ),
     StepDefinition(
-        title="Your daily routine",
-        description="One final group, then review your answers and get a result.",
+        title="Daily routine inputs",
+        description="Complete the remaining fields, review the record and generate a result.",
         features=(
             "calorie_expenditure",
             "step_count",
