@@ -102,6 +102,17 @@ def test_professional_layout_is_centered_restrained_and_responsive():
     ) >= 4.5
 
 
+def test_medical_disclaimer_overrides_main_content_paragraph_typography():
+    css = build_theme_css("light")
+    declarations = _css_declarations(
+        css,
+        '[data-testid="stMainBlockContainer"] .medical-disclaimer',
+    )
+    assert "color: var(--app-secondary-text) !important" in declarations
+    assert "font-size: 0.8125rem" in declarations
+    assert "line-height: 1.5" in declarations
+
+
 def test_component_radii_distinguish_controls_from_card_surfaces():
     css = build_theme_css("light")
     assert "border-radius: 0.875rem" in _css_declarations(

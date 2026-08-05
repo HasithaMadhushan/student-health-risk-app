@@ -371,7 +371,7 @@ summary:focus-visible {{
     line-height: 1.5;
 }}
 
-.medical-disclaimer {{
+[data-testid="stMainBlockContainer"] .medical-disclaimer {{
     margin: 0.75rem 0 0;
     color: var(--app-secondary-text) !important;
     font-size: 0.8125rem;
