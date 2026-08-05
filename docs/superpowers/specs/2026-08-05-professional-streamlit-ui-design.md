@@ -27,7 +27,7 @@ Use a surgical Streamlit redesign built from the existing native Streamlit contr
 
 - Title: **Student Health Risk Prediction**
 - Subtitle: **Enter one record to generate a competition-model prediction.**
-- Remove the complete yellow **Important information** panel, including its medical disclaimer and session/privacy sentence, from every application state.
+- Remove the prominent yellow **Important information** panel and its old session/privacy sentence from every application state. Retain the exact mandatory medical disclaimer as compact, non-panel footer content in every normal and fail-closed state.
 
 The header is followed by a compact step label and progress bar. The step heading and its supporting copy appear once beneath the progress indicator, avoiding duplicate step titles.
 
@@ -80,10 +80,11 @@ The **Review entered values** expander remains below the result card and uses on
 
 Add a low-emphasis footer after the active view:
 
+- Exact permanent disclaimer: **Educational and research risk-screening demonstrator only. This output is not a medical diagnosis and must not replace advice from a qualified healthcare professional.**
 - **CIS6005 Computational Intelligence project**
 - **Model family: CatBoost**
 
-The footer must not reproduce the removed disclaimer panel.
+The disclaimer must use secondary text colour, compact spacing, and body text of at least 1rem. It must not reproduce the removed yellow panel or old technical copy.
 
 ## Visual system
 
@@ -122,7 +123,7 @@ Schema or model loading failures remain fail-closed and use a concise `st.error`
 Follow test-driven development for each presentation change:
 
 1. Update UI text tests so they fail against the current interface.
-2. Add explicit assertions that the yellow disclaimer copy is absent from Step 1, Step 2, and the result state.
+2. Add explicit assertions that the yellow warning panel and old technical/session copy are absent while the exact compact mandatory medical disclaimer is present in Step 1, Step 2, the result state, and fail-closed startup output.
 3. Add or update assertions for the requested headings, actions, review expander, result card, confidence-score expander, and footer.
 4. Preserve and run all inference, schema/class-order, deterministic prediction, validation, privacy/non-persistence, artefact-failure, navigation/reset, and theme-accessibility tests.
 5. Run the complete `pytest` suite and report collected, passed, failed, skipped, and warning counts exactly.
@@ -130,4 +131,4 @@ Follow test-driven development for each presentation change:
 
 ## Acceptance criteria
 
-The work is complete only when the requested copy and visual hierarchy are visible in all three states, the removed yellow panel is absent everywhere, no identifying or persistent input handling is introduced, the model/schema artefact hashes remain unchanged, and the full test suite completes with no unresolved failures.
+The work is complete only when the requested copy and visual hierarchy are visible in all three states, the removed yellow panel is absent everywhere, the exact compact mandatory medical disclaimer remains visible in every normal and fail-closed state, no identifying or persistent input handling is introduced, the model/schema artefact hashes remain unchanged, and the full test suite completes with no unresolved failures.

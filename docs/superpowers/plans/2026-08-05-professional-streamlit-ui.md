@@ -17,6 +17,7 @@
 - Do not add external frontend frameworks or remove privacy/inference tests.
 - Keep the two-step five-feature/seven-feature schema mapping exactly unchanged.
 - Remove the full yellow **Important information** panel from every application state.
+- Permanently retain the exact mandatory medical disclaimer as compact, non-panel footer content in every normal and fail-closed state.
 - Maintain accessible contrast, visible focus, 44 px minimum targets, reduced motion, and responsive desktop/tablet/mobile behaviour.
 
 ---
@@ -77,7 +78,7 @@ Expected: capture the exact collected, passed, failed, skipped, and warning coun
 
 **Interfaces:**
 - Consumes: `GUIDED_STEPS`, `build_payload`, existing session-state keys, `CatBoostPredictor.predict`, and `PredictionResult.confidence_scores`.
-- Produces: the exact two-step copy, action hierarchy, result card text, review expander, footer, and removal of the disclaimer panel.
+- Produces: the exact two-step copy, action hierarchy, result card text, review expander, compact permanent disclaimer/footer, and removal of the prominent yellow warning panel.
 
 - [ ] **Step 1: Update the presentation contract test first**
 
@@ -96,7 +97,7 @@ assert tuple(step.description for step in GUIDED_STEPS) == (
 
 - [ ] **Step 2: Replace obsolete UI assertions and add absence checks**
 
-Rename the disclaimer test to `test_app_removes_prominent_disclaimer_and_has_no_identifying_fields` and assert:
+Rename the disclaimer test to `test_app_uses_compact_disclaimer_and_has_no_identifying_fields` and assert:
 
 ```python
 visible = " ".join(
@@ -105,8 +106,11 @@ visible = " ".join(
     for item in collection
 )
 assert "Important information" not in visible
-assert DISCLAIMER not in visible
 assert "Your answers stay in this session" not in visible
+disclaimer_items = [item.value for item in app.markdown if DISCLAIMER in item.value]
+assert len(disclaimer_items) == 1
+assert 'class="medical-disclaimer"' in disclaimer_items[0]
+assert not app.warning
 ```
 
 Keep the existing identifying-field disjointness assertion unchanged. Update the two-step test to require the exact header, subtitle, step headings, and action labels:
@@ -149,13 +153,13 @@ Run:
 .\.venv\Scripts\python.exe -m pytest tests/test_presentation.py tests/test_streamlit_app.py -q
 ```
 
-Expected: failures report the old headings, old buttons, old result labels, and still-visible disclaimer. Failures must be assertion failures caused by the unimplemented design, not import or fixture errors.
+Expected: failures report the old headings, old buttons, old result labels, the still-visible yellow warning panel, or the missing compact mandatory disclaimer. Failures must be assertion failures caused by the unimplemented design, not import or fixture errors.
 
 - [ ] **Step 4: Implement the minimal copy and structure changes**
 
 In `app/presentation.py`, change only the two `StepDefinition` titles and descriptions. In `app/streamlit_app.py`:
 
-- remove the `DISCLAIMER` import and the `st.warning` call;
+- remove the `st.warning` call while retaining the `DISCLAIMER` import for compact permanent footer rendering;
 - set the page title and visible title to `Student Health Risk Prediction`;
 - render the requested subtitle;
 - make `render_progress` output only the step label, compact progress bar, heading, and supporting text once;
@@ -163,7 +167,7 @@ In `app/presentation.py`, change only the two `StepDefinition` titles and descri
 - rename the review expander to `Review entered values`;
 - rename result content and confidence expander exactly as specified;
 - keep `for label, score in result.confidence_scores.items()` unchanged to preserve saved model class order;
-- add `render_footer()` and call it after Step 1, Step 2, fail-closed error display, and result rendering;
+- add `render_footer()` and call it after Step 1, Step 2, fail-closed error display, and result rendering; render the exact `DISCLAIMER` in `.medical-disclaimer` content without a warning panel;
 - retain keyed buttons, `store_visible_values`, `go_forward`, `go_back`, `reset_check`, `st.rerun`, and exception handling.
 
 Use this footer implementation:
@@ -171,6 +175,7 @@ Use this footer implementation:
 ```python
 def render_footer() -> None:
     st.markdown(
+        f'<p class="medical-disclaimer">{DISCLAIMER}</p>'
         '<footer class="app-footer">'
         '<span>CIS6005 Computational Intelligence project</span>'
         '<span>Model family: CatBoost</span>'
@@ -266,6 +271,7 @@ In `app/theme.py`:
 - keep inputs at least 48 px high, labels visible, and focus rings 3 px;
 - style the compact progress track without using colour as the only state signal;
 - style `.app-footer` as a responsive, muted, bordered-top row;
+- style `[data-testid="stMainBlockContainer"] .medical-disclaimer` with compact spacing, secondary colour, and at least `1rem` body text;
 - preserve error component contrast, reduced-motion handling, dropdown legibility, and full-width mobile buttons;
 - avoid selectors that hide labels, focus outlines, validation text, or Streamlit accessibility semantics.
 
@@ -300,12 +306,17 @@ git commit -m "style: add restrained responsive application theme"
 
 **Files:**
 - Modify: `tests/test_streamlit_app.py`
+- Modify: `app/streamlit_app.py` only for compact mandatory disclaimer and safe fail-closed presentation requirements
 - Preserve: `tests/test_inference.py`
 - Preserve: `tests/test_privacy.py`
 
 **Interfaces:**
 - Consumes: keyed prediction/reset buttons, result session state, saved class order, and non-persistent predictor behaviour.
 - Produces: test evidence that the redesign does not expose duplicate prediction actions, identifiers, payload metadata, or reordered confidence scores.
+
+- [ ] **Global compatibility: preserve the mandatory compact disclaimer**
+
+Assert the exact `DISCLAIMER` is rendered once with `.medical-disclaimer` styling in Step 1, Step 2, result, and fail-closed states. Assert the prominent yellow warning panel remains absent. Do not remove or weaken the required medical wording.
 
 - [ ] **Step 1: Add result-state regression assertions**
 
@@ -402,7 +413,7 @@ Expected: Streamlit reports `http://127.0.0.1:8501` and no startup traceback.
 At desktop and 375 px mobile widths, verify:
 
 - title, subtitle, Step 1 label, heading, and supporting copy are exact;
-- the yellow panel and all three removed strings are absent;
+- the yellow warning panel and old technical/session strings are absent while the exact compact mandatory medical disclaimer remains visible;
 - five correctly mapped fields appear with blank numeric defaults and non-preselected categorical defaults;
 - examples, labels, focus states, and Continue are readable and keyboard-operable;
 - two columns collapse without horizontal scrolling.
