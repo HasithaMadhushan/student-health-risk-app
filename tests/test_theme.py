@@ -6,6 +6,15 @@ from app.theme import (
 )
 
 
+def _css_declarations(css: str, selector: str) -> str:
+    marker = f"{selector} {{"
+    marker_index = css.find(marker)
+    if marker_index < 0:
+        return ""
+    start = marker_index + len(marker)
+    return css[start : css.index("}", start)]
+
+
 def test_normal_text_pairs_meet_wcag_aa():
     pairs = (
         (LIGHT_THEME.foreground, LIGHT_THEME.background),
@@ -48,10 +57,15 @@ def test_clean_numeric_input_css_contract():
 
 def test_primary_button_text_meets_wcag_aa():
     assert LIGHT_THEME.primary == "#0F766E"
-    assert contrast_ratio(
-        LIGHT_THEME.on_primary,
-        LIGHT_THEME.primary,
-    ) >= 4.5
+    for palette in (LIGHT_THEME, DARK_THEME):
+        assert hasattr(palette, "primary_hover")
+        assert contrast_ratio(palette.on_primary, palette.primary) >= 4.5
+        assert contrast_ratio(palette.on_primary, palette.primary_hover) >= 4.5
+
+    css = build_theme_css()
+    hover = _css_declarations(css, '.stButton > button[kind="primary"]:hover')
+    assert "background: var(--app-primary-hover)" in hover
+    assert "border-color: var(--app-primary-hover)" in hover
 
 
 def test_professional_health_palette_is_used():
@@ -86,6 +100,26 @@ def test_professional_layout_is_centered_restrained_and_responsive():
         LIGHT_THEME.on_primary,
         LIGHT_THEME.primary,
     ) >= 4.5
+
+
+def test_component_radii_distinguish_controls_from_card_surfaces():
+    css = build_theme_css("light")
+    assert "border-radius: 0.875rem" in _css_declarations(
+        css,
+        '[data-testid="stExpander"] summary',
+    )
+    assert "border-radius: 1rem" in _css_declarations(
+        css,
+        '[data-testid="stExpander"] details',
+    )
+    assert "border-radius: 1rem" in _css_declarations(
+        css,
+        '[data-testid="stDataFrame"]',
+    )
+    assert "border-radius: 1rem" in _css_declarations(
+        css,
+        '[data-testid="stTable"]',
+    )
 
 
 def test_streamlit_selected_theme_is_not_overridden_by_system_palette():

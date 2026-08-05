@@ -6,6 +6,7 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class ThemePalette:
     primary: str
+    primary_hover: str
     on_primary: str
     accent: str
     background: str
@@ -23,6 +24,7 @@ class ThemePalette:
 
 LIGHT_THEME = ThemePalette(
     primary="#0F766E",
+    primary_hover="#115E59",
     on_primary="#FFFFFF",
     accent="#0D9488",
     background="#F8FAFC",
@@ -40,6 +42,7 @@ LIGHT_THEME = ThemePalette(
 
 DARK_THEME = ThemePalette(
     primary="#5EEAD4",
+    primary_hover="#99F6E4",
     on_primary="#042F2E",
     accent="#2DD4BF",
     background="#020617",
@@ -81,6 +84,7 @@ def contrast_ratio(foreground: str, background: str) -> float:
 def _properties(palette: ThemePalette) -> str:
     return f"""
     --app-primary: {palette.primary};
+    --app-primary-hover: {palette.primary_hover};
     --app-on-primary: {palette.on_primary};
     --app-accent: {palette.accent};
     --app-background: {palette.background};
@@ -188,12 +192,18 @@ body,
     box-shadow: 0 6px 20px rgba(15, 23, 42, 0.07);
 }}
 
-[data-testid="stExpander"] details,
+[data-testid="stExpander"] details {{
+    background: var(--app-surface) !important;
+    color: var(--app-foreground) !important;
+    border-color: var(--app-input-border) !important;
+    border-radius: 1rem;
+}}
+
 [data-testid="stExpander"] summary {{
     background: var(--app-surface) !important;
     color: var(--app-foreground) !important;
     border-color: var(--app-input-border) !important;
-    border-radius: 0.75rem;
+    border-radius: 0.875rem;
 }}
 
 [role="listbox"],
@@ -292,8 +302,8 @@ code {{
 }}
 
 .stButton > button[kind="primary"]:hover {{
-    background: #115E59 !important;
-    border-color: #115E59 !important;
+    background: var(--app-primary-hover) !important;
+    border-color: var(--app-primary-hover) !important;
 }}
 
 .stButton > button:not([kind="primary"]) {{
@@ -330,13 +340,13 @@ summary:focus-visible {{
 
 [data-testid="stDataFrame"] {{
     border: 1px solid var(--app-border);
-    border-radius: 0.75rem;
+    border-radius: 1rem;
     overflow: hidden;
 }}
 
 [data-testid="stTable"] {{
     border: 1px solid var(--app-border);
-    border-radius: 0.75rem;
+    border-radius: 1rem;
     overflow: hidden;
 }}
 
