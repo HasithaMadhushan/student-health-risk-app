@@ -1,107 +1,94 @@
-# CIS6005 Student Health Risk Demonstrator
+# Student Health Risk Prediction App
 
-This private repository contains the Streamlit inference application for the
-CIS6005 Computational Intelligence project. It uses the verified production
-CatBoost model trained for Kaggle competition `playground-series-s6e7`.
+This project is a Streamlit application developed for the CIS6005
+Computational Intelligence module. It uses a trained CatBoost classification
+model to place one set of health and lifestyle inputs into one of three
+competition categories:
 
-> Educational and research risk-screening demonstrator only. This output is not
-> a medical diagnosis and must not replace advice from a qualified healthcare
-> professional.
+- `fit`
+- `at-risk`
+- `unhealthy`
 
-## User experience and privacy
+The deployed application is available at
+[studenthealthrisk.streamlit.app](https://studenthealthrisk.streamlit.app/).
 
-The application uses an accessible public-service health presentation for
-non-technical users: reduced-glare grey, dark text, blue actions, green
-progress and one concise safety/privacy panel. One health check has two steps:
+## Features
 
-1. **Your health basics**
-2. **Your daily routine**, followed by a compact review and result action
+- A two-step form for entering 12 health and lifestyle values
+- Support for unknown or missing values
+- A review section before generating a prediction
+- A predicted category with optional model confidence scores
+- A reset option for starting a new prediction
+- Local validation of inputs before they are sent to the model
 
-Numeric fields start blank and categorical fields prompt for an answer or
-**Not sure**. Numeric values use clean direct-entry fields with readable
-examples, familiar units and human-friendly precision: half-hours, whole bpm,
-steps and minutes, and one decimal for BMI and water intake. Back and Continue
-preserve temporary answers, and the Step 2 review shows all 12 model inputs
-before prediction. The
-result displays the predicted competition category first; the three model
-confidence scores are available in a collapsed panel. They are not described
-as calibrated probabilities.
+The application does not ask for names, email addresses, student numbers or
+other contact details. Entered values are held temporarily in Streamlit session
+state and are not saved by this project.
 
-The app excludes `id` and `gender`, does not request identifying or contact
-information, and does not write prediction inputs to files, databases or logs.
-Displayed numeric limits are observed competition-data bounds, not clinical
-reference ranges.
+## Technologies used
 
-Technical assessor content is deliberately excluded from the student-facing
-interface. A separate viva walkthrough is provided in
-`docs/ASSESSOR_DEMONSTRATION.md`.
+- Python
+- Streamlit for the user interface
+- CatBoost for classification
+- pandas and NumPy for preparing model inputs
+- pytest and Streamlit AppTest for automated tests
 
-## Verified production runtime
+## Installation
 
-- Model: `catboost_balanced_no_gender_production_all_train_v1.cbm`
-- Experiment: `catboost_balanced_no_gender_production_all_train_v1`
-- Trees: 343
-- Training rows: 690,088
-- Features: 12, excluding `gender`
-- Classes: `at-risk`, `fit`, `unhealthy`
-- SHA-256: `ea5f6ea9b060720d063874f9ee6ab0aae7ed8367e94c1222ffe2608dbe990004`
-
-This deployment model is distinct from any later Kaggle-only ensemble.
-
-## Project structure
-
-```text
-app/streamlit_app.py       Streamlit host, navigation and output UI
-app/presentation.py        Friendly labels, guided stages and payload ordering
-app/theme.py               Accessible student-facing visual theme
-src/config.py              Paths, disclaimer and locked constants
-src/schema.py              Saved schema loading and contract checks
-src/validation.py          Input validation and ordered DataFrame creation
-src/inference.py           SHA-256 verification and CatBoost prediction
-tests/                     Automated schema, inference, privacy and UI tests
-docs/ASSESSOR_DEMONSTRATION.md  Separate viva code walkthrough
-reports/evidence/app/      Runtime metadata and interface evidence
-```
-
-Private deployment artifacts are stored under `artifacts/private/`. Do not
-make this repository public while the model and schemas are tracked. Raw Kaggle
-data and generated submission CSV files are not included.
-
-## Setup and operation
-
-From the project root in PowerShell:
+Python 3.11 or a compatible Python 3 version is recommended. From the project
+folder, create a virtual environment and install the dependencies:
 
 ```powershell
 python -m venv .venv
 & '.\.venv\Scripts\python.exe' -m pip install -r requirements.txt
+```
+
+Run the tests with:
+
+```powershell
 & '.\.venv\Scripts\python.exe' -m pytest -q
+```
+
+Start the application with:
+
+```powershell
 & '.\.venv\Scripts\streamlit.exe' run app\streamlit_app.py
 ```
 
-The application opens at `http://localhost:8501` and does not depend on an
-active Google Colab session.
+Streamlit will normally open the application at `http://localhost:8501`.
 
-## Exact inference flow
+## How prediction works
 
-1. `render_app()` displays the header and calls cached `load_runtime()`.
-2. `AppPaths.from_environment()` resolves the model/schema locations.
-3. `load_schema()` checks schema version, feature order and class order.
-4. `CatBoostPredictor.load()` verifies the model SHA-256 before loading it.
-5. `GUIDED_STEPS` groups the 12 locked features across two input steps.
-6. `build_payload()` restores exact training feature order.
-7. **Get my result** invokes `CatBoostPredictor.predict()`.
-8. `prepare_record()` validates values and creates a one-row pandas DataFrame.
-9. CatBoost `predict_proba()` and `predict()` create scores and a class.
-10. `render_result()` displays the category and optional confidence details.
+1. The application loads the saved feature schema and CatBoost model.
+2. The model file is checked against the expected SHA-256 hash.
+3. The user completes the two input steps and can review the entered values.
+4. The inputs are validated and arranged in the same feature order used by the
+   model.
+5. CatBoost generates a category and confidence scores.
+6. Streamlit displays the result to the user.
 
-Streamlit handles presentation and temporary state; CatBoost performs
-classification; pandas builds the ordered record; NumPy represents numeric
-missingness; `hashlib` verifies artifact integrity; pytest and Streamlit AppTest
-verify the end-to-end contract.
+The model uses 12 features. The `id` and `gender` columns are not used for
+prediction. Numeric missing values are passed as `NaN`, while missing
+categorical values use the token expected by the saved model schema.
 
-## Evidence
+## Project structure
 
-The repeatable viva walkthrough is in `docs/ASSESSOR_DEMONSTRATION.md`.
-Interface screenshots in `reports/evidence/app/` cover the first guided stage,
-12-feature review and prediction result. The interface was previously checked
-at desktop and narrow mobile viewports without horizontal overflow.
+```text
+app/streamlit_app.py   Streamlit interface and navigation
+app/presentation.py    Input groups and display labels
+app/theme.py           Application styling
+src/config.py          Model and schema paths
+src/schema.py          Schema loading and checks
+src/validation.py      Input validation and DataFrame creation
+src/inference.py       Model loading and prediction
+tests/                 Automated tests
+artifacts/private/     Saved model, schemas and training metadata
+```
+
+## Limitations
+
+The model was trained for a Kaggle competition dataset, so its categories and
+confidence scores should be interpreted in that context. The confidence scores
+are model outputs and are not calibrated medical probabilities. This
+application is an educational demonstration and does not provide a medical
+diagnosis or replace advice from a qualified healthcare professional.
