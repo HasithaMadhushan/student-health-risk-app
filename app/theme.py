@@ -22,36 +22,36 @@ class ThemePalette:
 
 
 LIGHT_THEME = ThemePalette(
-    primary="#005EB8",
+    primary="#0F766E",
     on_primary="#FFFFFF",
-    accent="#007F3B",
-    background="#F0F4F5",
-    foreground="#212B32",
+    accent="#0D9488",
+    background="#F8FAFC",
+    foreground="#0F172A",
     surface="#FFFFFF",
-    muted_surface="#E8EDEE",
-    border="#D8DDE0",
-    secondary_text="#4C6272",
-    input_border="#4C6272",
-    alert_surface="#FFF9C4",
-    alert_foreground="#212B32",
-    focus="#FFEB3B",
-    destructive="#D5281B",
+    muted_surface="#F1F5F9",
+    border="#CBD5E1",
+    secondary_text="#475569",
+    input_border="#64748B",
+    alert_surface="#FEF2F2",
+    alert_foreground="#991B1B",
+    focus="#0D9488",
+    destructive="#B91C1C",
 )
 
 DARK_THEME = ThemePalette(
-    primary="#22D3EE",
-    on_primary="#082F49",
-    accent="#34D399",
-    background="#081F29",
-    foreground="#F0FDFF",
-    surface="#102F3B",
-    muted_surface="#163E4A",
-    border="#155E75",
-    secondary_text="#D8E2E6",
-    input_border="#AEB7BD",
-    alert_surface="#4D3B00",
-    alert_foreground="#FFF9C4",
-    focus="#FFEB3B",
+    primary="#5EEAD4",
+    on_primary="#042F2E",
+    accent="#2DD4BF",
+    background="#020617",
+    foreground="#F8FAFC",
+    surface="#0F172A",
+    muted_surface="#1E293B",
+    border="#475569",
+    secondary_text="#CBD5E1",
+    input_border="#94A3B8",
+    alert_surface="#450A0A",
+    alert_foreground="#FECACA",
+    focus="#2DD4BF",
     destructive="#F87171",
 )
 
@@ -127,15 +127,9 @@ body,
     color: var(--app-foreground) !important;
 }}
 
-[data-testid="stAppViewContainer"] {{
-    background-image:
-        radial-gradient(circle at top right, color-mix(in srgb, var(--app-primary) 7%, transparent), transparent 28rem);
-}}
-
 [data-testid="stMainBlockContainer"] {{
-    max-width: 52rem;
-    padding-top: 2rem;
-    padding-bottom: 3rem;
+    max-width: 56.25rem;
+    padding: 2.5rem 1.5rem 3rem;
 }}
 
 [data-testid="stMainBlockContainer"] h1 {{
@@ -191,7 +185,7 @@ body,
     background: var(--app-surface) !important;
     border: 1px solid var(--app-border) !important;
     border-radius: 1rem;
-    box-shadow: 0 10px 30px rgba(23, 50, 77, 0.06);
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.07);
 }}
 
 [data-testid="stExpander"] details,
@@ -214,9 +208,9 @@ body,
 [data-testid="stSelectbox"] [role="group"] {{
     background: var(--app-surface) !important;
     border: 1.5px solid var(--app-input-border) !important;
-    border-radius: 10px !important;
+    border-radius: 0.875rem !important;
     color: var(--app-foreground) !important;
-    min-height: 52px;
+    min-height: 48px;
     overflow: hidden;
     transition: border-color 180ms ease, box-shadow 180ms ease;
 }}
@@ -240,7 +234,7 @@ body,
     border: 0 !important;
     font-size: 1rem !important;
     font-variant-numeric: tabular-nums;
-    min-height: 49px;
+    min-height: 48px;
     padding-inline: 0.875rem !important;
 }}
 
@@ -294,12 +288,12 @@ code {{
     background: var(--app-primary) !important;
     border-color: var(--app-primary) !important;
     color: var(--app-on-primary) !important;
-    box-shadow: 0 8px 18px rgba(24, 124, 114, 0.18);
+    box-shadow: none;
 }}
 
 .stButton > button[kind="primary"]:hover {{
-    background: #003D78 !important;
-    border-color: #003D78 !important;
+    background: #115E59 !important;
+    border-color: #115E59 !important;
 }}
 
 .stButton > button:not([kind="primary"]) {{
@@ -329,6 +323,9 @@ summary:focus-visible {{
 
 [data-testid="stProgressBarTrack"] {{
     background-color: var(--app-muted-surface) !important;
+    border: 1px solid var(--app-border);
+    min-height: 0.5rem;
+    overflow: hidden;
 }}
 
 [data-testid="stDataFrame"] {{
@@ -349,6 +346,26 @@ summary:focus-visible {{
     background: var(--app-surface) !important;
     color: var(--app-foreground) !important;
     border-color: var(--app-border) !important;
+}}
+
+.app-footer {{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+    margin-top: 2.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--app-border);
+    color: var(--app-secondary-text);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+}}
+
+.medical-disclaimer {{
+    margin: 0.75rem 0 0;
+    color: var(--app-secondary-text) !important;
+    font-size: 0.8125rem;
+    line-height: 1.5;
 }}
 
 #MainMenu {{
@@ -375,6 +392,11 @@ summary:focus-visible {{
 
     .stButton > button {{
         width: 100%;
+    }}
+
+    .app-footer {{
+        align-items: flex-start;
+        flex-direction: column;
     }}
 }}
 
