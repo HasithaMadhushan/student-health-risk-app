@@ -45,7 +45,7 @@ def test_app_script_can_resolve_project_modules():
     assert completed.returncode == 0, completed.stderr
 
 
-def test_app_removes_prominent_disclaimer_and_has_no_identifying_fields():
+def test_app_uses_compact_disclaimer_and_has_no_identifying_fields():
     app = AppTest.from_file(str(APP)).run(timeout=30)
     assert not app.exception
     visible = " ".join(
@@ -54,7 +54,12 @@ def test_app_removes_prominent_disclaimer_and_has_no_identifying_fields():
         for item in collection
     )
     assert "Important information" not in visible
-    assert DISCLAIMER not in visible
+    disclaimer_items = [
+        item.value for item in app.markdown if DISCLAIMER in item.value
+    ]
+    assert len(disclaimer_items) == 1
+    assert 'class="medical-disclaimer"' in disclaimer_items[0]
+    assert not app.warning
     assert "Your answers stay in this session" not in visible
     labels = {
         item.label.casefold()
@@ -64,6 +69,21 @@ def test_app_removes_prominent_disclaimer_and_has_no_identifying_fields():
     assert labels.isdisjoint(
         {"name", "student id", "email", "phone", "phone number"}
     )
+
+
+def test_compact_disclaimer_is_permanent_across_normal_app_states():
+    states = (
+        AppTest.from_file(str(APP)).run(timeout=30),
+        reach_step_two(AppTest.from_file(str(APP)).run(timeout=30)),
+        make_prediction(AppTest.from_file(str(APP)).run(timeout=30)),
+    )
+    for current in states:
+        disclaimer_items = [
+            item.value for item in current.markdown if DISCLAIMER in item.value
+        ]
+        assert len(disclaimer_items) == 1
+        assert 'class="medical-disclaimer"' in disclaimer_items[0]
+        assert not current.warning
 
 
 def test_app_uses_exactly_two_clear_steps():
@@ -183,6 +203,13 @@ def test_step_two_contains_compact_review_of_all_features():
     ):
         assert label in review
     assert "Not provided" in review
+    for forbidden in (
+        "model_sha256",
+        "experiment_id",
+        "artifacts/private",
+        "student_id",
+    ):
+        assert forbidden not in review
 
 
 def test_result_is_simple_and_confidence_details_are_available():
@@ -197,6 +224,15 @@ def test_result_is_simple_and_confidence_details_are_available():
     )
     assert any(item.label == "View model confidence scores" for item in app.expander)
     assert app.button(key="reset_button").label == "Start a new prediction"
+    assert all(button.key != "predict_button" for button in app.button)
+    score_progress = [
+        item for item in app.get("progress") if item.proto.text
+    ]
+    assert len(score_progress) == 3
+    score_labels = [item.proto.text for item in score_progress]
+    assert score_labels[0].startswith("At-risk:")
+    assert score_labels[1].startswith("Fit:")
+    assert score_labels[2].startswith("Unhealthy:")
     assert "CIS6005 Computational Intelligence project" in " ".join(
         item.value for item in app.markdown
     )
@@ -206,9 +242,22 @@ def test_result_is_simple_and_confidence_details_are_available():
     assert not app.warning
 
 
+def test_result_rerun_keeps_one_reset_action_and_no_prediction_action():
+    app = make_prediction(AppTest.from_file(str(APP)).run(timeout=30))
+    app.run(timeout=30)
+    reset_actions = [
+        button for button in app.button if button.key == "reset_button"
+    ]
+    assert len(reset_actions) == 1
+    assert all(button.key != "predict_button" for button in app.button)
+
+
 def test_start_new_check_returns_to_blank_first_step():
     app = make_prediction(AppTest.from_file(str(APP)).run(timeout=30))
     app.button(key="reset_button").click().run(timeout=30)
     assert "Step 1 of 2" in stage_text(app)
     assert "Prediction result" not in stage_text(app)
-    assert widget(app, app.number_input, "value::sleep_duration").value is None
+    for field in app.number_input:
+        assert field.value is None
+    for field in app.selectbox:
+        assert field.value is None

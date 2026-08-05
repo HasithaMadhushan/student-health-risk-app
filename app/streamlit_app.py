@@ -18,7 +18,7 @@ from app.presentation import (
     human_label,
 )
 from app.theme import build_theme_css
-from src.config import AppPaths
+from src.config import DISCLAIMER, AppPaths
 from src.inference import ArtifactError, CatBoostPredictor, PredictionResult
 from src.schema import FeatureSpec, InferenceSchema, SchemaError, load_schema
 from src.validation import InputValidationError
@@ -128,6 +128,7 @@ def render_progress(step_index: int) -> None:
 
 def render_footer() -> None:
     st.markdown(
+        f'<p class="medical-disclaimer">{DISCLAIMER}</p>'
         '<footer class="app-footer">'
         '<span>CIS6005 Computational Intelligence project</span>'
         '<span>Model family: CatBoost</span>'
